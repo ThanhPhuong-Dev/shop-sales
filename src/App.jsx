@@ -1,28 +1,28 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { decrement, increment, incrementByAmount } from './redux/counter/counterSlice';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { publicRouter } from './routes/route';
+import DefaultLayout from './components/layout/DefaultLayout/DefaultLayout';
 function App() {
-  const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
-
   return (
     <div>
-      <Stack direction="row" spacing={2}>
-        <Button variant="contained" onClick={() => dispatch(increment())}>
-          Increment
-        </Button>
-        <Typography variant="h4" component="h2">
-          {count}
-        </Typography>
-        <button aria-label="Decrement value" onClick={() => dispatch(decrement())}>
-          Decrement
-        </button>
-        <Button variant="contained" onClick={() => dispatch(incrementByAmount())}>
-          fsafasd
-        </Button>
-      </Stack>
+      <Router>
+        <Routes>
+          {publicRouter.map((route) => {
+            const Page = route.element;
+            const Layout = DefaultLayout;
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Page></Page>
+                  </Layout>
+                }
+              ></Route>
+            );
+          })}
+        </Routes>
+      </Router>
     </div>
   );
 }
