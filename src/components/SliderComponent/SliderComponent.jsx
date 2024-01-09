@@ -6,6 +6,7 @@ import 'swiper/swiper-bundle.css';
 function SliderComponent() {
   return (
     <Swiper
+      style={{ marginBottom: '16px' }}
       // install Swiper modules
       modules={[Navigation, Pagination, Autoplay, EffectFade]}
       spaceBetween={50}

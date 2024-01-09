@@ -3,7 +3,14 @@ import CardComponent from './CardComponent/CardComponent';
 
 function ListCards({ indexCol }) {
   return (
-    <Box sx={{ mb: 2, display: 'grid', gridTemplateColumns: `repeat(${indexCol}, 1fr)`, gap: 2 }}>
+    <Box
+      sx={{
+        mb: 2,
+        display: 'grid',
+        gridTemplateColumns: `repeat(${indexCol}, 1fr)`,
+        gap: 2
+      }}
+    >
       <CardComponent></CardComponent>
       <CardComponent></CardComponent>
       <CardComponent></CardComponent>

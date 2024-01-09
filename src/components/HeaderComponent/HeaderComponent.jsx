@@ -37,18 +37,20 @@ function HeaderComponent() {
             justifyContent: 'center'
           }}
         >
-          <Box
-            sx={{
-              width: '70px',
-              height: '70px',
-              '& img': {
-                width: '100%',
-                height: '100%'
-              }
-            }}
-          >
-            <img src={logo}></img>
-          </Box>
+          <a href="/">
+            <Box
+              sx={{
+                width: '70px',
+                height: '70px',
+                '& img': {
+                  width: '100%',
+                  height: '100%'
+                }
+              }}
+            >
+              <img src={logo}></img>
+            </Box>
+          </a>
 
           <Typography
             variant="h4"

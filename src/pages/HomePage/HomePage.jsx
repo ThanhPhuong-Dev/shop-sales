@@ -6,12 +6,13 @@ const arr = ['11.1 Sale Sinh Nhật', 'Miễn Phí Gói Quà', 'điện gia dụ
 
 function HomePages() {
   return (
-    <Container
-      maxWidth="lg"
+    <Box
+      // maxWidth="lg"
       sx={{
-        px: 2,
-        height: '100vh',
-        marginTop: '80px'
+        px: 2
+        // height: '100vh',
+        // background: 'blue'
+        // marginTop: '80px'
       }}
     >
       <Box sx={{ display: 'flex', padding: '0 0 10px 0', gap: 3, borderBottom: '2px solid #ccc' }}>
@@ -46,7 +47,7 @@ function HomePages() {
           Xem Thêm
         </Button>
       </Box>
-    </Container>
+    </Box>
   );
 }
 

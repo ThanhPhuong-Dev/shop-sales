@@ -32,7 +32,7 @@ const data = {
 };
 function TypeProductPage() {
   return (
-    <Container maxWidth="lg" sx={{ display: 'flex', gap: 2 }}>
+    <Box sx={{ display: 'flex', gap: 2 }}>
       <NavBarComponent label="Danh Mục" datas={data}></NavBarComponent>
       <Box
         sx={{
@@ -53,7 +53,7 @@ function TypeProductPage() {
           }}
         />
       </Box>
-    </Container>
+    </Box>
   );
 }
 
