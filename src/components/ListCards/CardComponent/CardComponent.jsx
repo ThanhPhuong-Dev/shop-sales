@@ -26,6 +26,7 @@ function CardComponent() {
         overflow: 'visible',
         position: 'relative',
         transition: '0.5s',
+        border: '1px solid white',
         '&:hover': {
           animation: `${fadeIn} 0.5s linear forwards`,
           border: '1px solid red'
