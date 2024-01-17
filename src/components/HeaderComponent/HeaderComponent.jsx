@@ -4,10 +4,19 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Container, Typography } from '@mui/material';
+import { Avatar, Container, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
-
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import cutTheFirstLetter from '../../utils/cutTheFirstLetter';
+import capitalizeFirstLetter from '../../utils/capitalizeFirstLetter';
 function HeaderComponent() {
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
+  const hadnleClickUser = () => {
+    navigate('/login');
+  };
+
   return (
     <Box
       sx={{
@@ -120,40 +129,97 @@ function HeaderComponent() {
         {/* Action */}
         <Box
           sx={{
-            // flex: 1,
-            // maxWidth: '20%',
+            flex: 1,
+            maxWidth: '20%',
             display: 'flex',
-            // justifyContent: 'space-around',
+            justifyContent: 'space-around',
             gap: 3
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              border: '2px solid #95a5a6',
-              px: 2,
-              gap: 1,
-              borderRadius: '10px',
-              cursor: 'pointer',
-              transition: '0.5s',
+          {user?.name ? (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '2px solid #95a5a6',
+                px: 2,
+                gap: 1,
+                borderRadius: '10px',
+                cursor: 'pointer',
+                transition: '0.5s',
+                height: '37px',
+                minWidth: '150px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                '&:hover': {
+                  background: '#cca77f'
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: '3rem',
+                  color: 'white'
+                },
+                '& .MuiTypography-root': {
+                  fontSize: '1.6rem',
+                  color: 'white'
+                }
+              }}
+            >
+              {user?.image ? (
+                <Avatar alt="Remy Sharp" src={user?.image} />
+              ) : (
+                <Avatar
+                  sx={{
+                    bgcolor: '#ef6c00',
+                    width: '30px',
+                    height: '30px',
+                    fontWeight: 700,
+                    fontSize: '1.5rem',
+                    textAlign: 'center'
+                  }}
+                >
+                  {cutTheFirstLetter(user?.name)}
+                </Avatar>
+              )}
+              <Typography
+                variant="inherit"
+                sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontWeight: 600 }}
+              >
+                {capitalizeFirstLetter(user?.name)}
+              </Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '2px solid #95a5a6',
+                px: 2,
+                gap: 1,
+                borderRadius: '10px',
+                cursor: 'pointer',
+                transition: '0.5s',
 
-              '&:hover': {
-                background: '#cca77f'
-              },
-              '& .MuiSvgIcon-root': {
-                fontSize: '3rem',
-                color: 'white'
-              },
-              '& .MuiTypography-root': {
-                fontSize: '1.6rem',
-                color: 'white'
-              }
-            }}
-          >
-            <PersonIcon></PersonIcon>
-            <Typography variant="inherit">Tài Khoản</Typography>
-          </Box>
+                '&:hover': {
+                  background: '#cca77f'
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: '3rem',
+                  color: 'white'
+                },
+                '& .MuiTypography-root': {
+                  fontSize: '1.6rem',
+                  color: 'white'
+                }
+              }}
+            >
+              <PersonIcon></PersonIcon>
+              <Typography variant="inherit" onClick={hadnleClickUser}>
+                Tài Khoản
+              </Typography>
+            </Box>
+          )}
+
           <Box
             sx={{
               display: 'flex',

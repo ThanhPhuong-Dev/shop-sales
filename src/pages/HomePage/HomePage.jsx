@@ -2,6 +2,7 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import SliderComponent from '~/components/SliderComponent/SliderComponent';
 import Chip from '@mui/material/Chip';
 import ListCards from '~/components/ListCards/ListCards';
+
 const arr = ['11.1 Sale Sinh Nhật', 'Miễn Phí Gói Quà', 'điện gia dụng', 'xe cộ', 'mẹ & bé', 'nhà cửa', 'thể thao'];
 
 function HomePages() {

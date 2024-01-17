@@ -1,16 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Box, IconButton, InputAdornment, Typography } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import InputForm from './InputForm/InputForm';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
+import * as UserServices from '../../services/userService';
+import { useMutationHook } from '~/hooks/useMutationHook';
+import { keyframes } from '@emotion/react';
+import LowecapitalizeFirstLetterrCase from '~/utils/capitalizeFirstLetter';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../redux/Silde/userSilde';
+
+const fadeLoading = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
 function FormAccountLogin() {
-  const [username, setUsername] = useState('');
+  const navgiate = useNavigate();
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassWord, setShowPassword] = useState(false);
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  const [loading, setLoading] = useState(false);
+  const [dataError, setDataError] = useState(null);
+  console.log('dataError', dataError);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -20,10 +44,41 @@ function FormAccountLogin() {
   const handleShowPassWord = () => {
     setShowPassword((eventShowPassword) => !eventShowPassword);
   };
+  const handleLoading = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 200);
+  };
 
+  const mutation = useMutationHook((data) => {
+    return UserServices.loginUser(data);
+  });
+
+  const { data, isSuccess, isError, error } = mutation;
+  console.log('mufsdf', mutation);
+  useEffect(() => {
+    if (isSuccess) {
+      navgiate('/');
+      localStorage.setItem('access_token', data?.access_token);
+      if (data?.access_token) {
+        const decoded = jwtDecode(data?.access_token);
+        if (decoded?.id) {
+          handleGetDetailUser(decoded?.id, data?.access_token);
+        }
+      }
+    } else if (isError) {
+      setDataError(error.response.data.message);
+    }
+  }, [isSuccess, isError]);
+
+  const handleGetDetailUser = async (id, access_token) => {
+    const res = await UserServices.getDetailrUser(id, access_token);
+    const text = dispatch(updateUser({ ...res?.data, access_token }));
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Thực hiện xử lý đăng nhập ở đây
+    mutation.mutate({ email, password });
   };
 
   return (
@@ -32,31 +87,18 @@ function FormAccountLogin() {
         padding: '0 30px 30px 30px'
       }}
     >
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        // style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}
+      >
         <InputForm
           label="Tên Đăng Nhập"
-          id="username"
-          type="username"
-          value={username}
-          handleChange={handleUsernameChange}
+          id="email"
+          type="email"
+          value={email}
+          handleChange={handleEmailChange}
         ></InputForm>
 
-        {/* <FormControl fullWidth margin="normal">
-          <InputLabel htmlFor="password">Mật khẩu</InputLabel>
-          <Input
-            id="password"
-            type={!showPassWord ? 'password' : 'text'}
-            value={password}
-            onChange={handlePasswordChange}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton onClick={handleShowPassWord}>
-                  {!showPassWord ? <VisibilityIcon></VisibilityIcon> : <VisibilityOffIcon></VisibilityOffIcon>}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl> */}
         <InputForm
           label="Mật Khẩu"
           id="password"
@@ -71,19 +113,27 @@ function FormAccountLogin() {
             </InputAdornment>
           }
         ></InputForm>
+
         <Button
+          disabled={!email.length || !password.length}
           variant="contained"
           color="primary"
           type="submit"
           fullWidth
+          onClick={handleLoading}
           sx={{
-            mt: 2,
-            padding: '12px 0',
+            mt: 3,
+            position: 'relative',
+            // padding: '12px 0',
             color: ' white',
             background: '#ee4d2d',
-            fontSize: '1.2rem',
+            fontSize: '1.6rem',
+            height: '45px',
+            textTransform: 'capitalize',
+            fontWeight: 700,
             '&:focus': {
-              background: 'red'
+              background: 'red',
+              outline: 'none'
             },
             '&:hover': {
               background: 'red',
@@ -91,7 +141,31 @@ function FormAccountLogin() {
             }
           }}
         >
-          Đăng nhập
+          {loading ? (
+            <RotateRightIcon
+              sx={{
+                color: 'white',
+                fontSize: '2.3rem',
+                animation: `${fadeLoading} 2s linear infinite`
+              }}
+            ></RotateRightIcon>
+          ) : (
+            LowecapitalizeFirstLetterrCase('Đăng nhập')
+          )}
+          {dataError?.status === 'ERR' && (
+            <span
+              style={{
+                position: 'absolute',
+                left: 0,
+                bottom: '103%',
+                color: 'red',
+                fontSize: '1rem'
+              }}
+            >
+              {dataError.message}
+              {/* {data?.message} */}
+            </span>
+          )}
         </Button>
       </form>
 
