@@ -12,6 +12,6 @@ export const publicRouter = [
   { path: '/order', element: OrderPage, isShowHeader: true },
   { path: '/:type', element: TypeProductPage, isShowHeader: true },
   { path: '/product-details', element: ProductDetailPage, isShowHeader: true },
-  { path: '/sign-up', element: SignUp, isShowHeader: false },
+  { path: '/register', element: SignUp, isShowHeader: false },
   { path: '/login', element: Login, isShowHeader: false }
 ];
