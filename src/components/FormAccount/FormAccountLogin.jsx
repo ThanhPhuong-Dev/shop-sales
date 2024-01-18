@@ -32,7 +32,6 @@ function FormAccountLogin() {
   const [showPassWord, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataError, setDataError] = useState(null);
-  console.log('dataError', dataError);
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -56,11 +55,12 @@ function FormAccountLogin() {
   });
 
   const { data, isSuccess, isError, error } = mutation;
-  console.log('mufsdf', mutation);
+  console.log('data', data);
   useEffect(() => {
     if (isSuccess) {
       navgiate('/');
       localStorage.setItem('access_token', data?.access_token);
+      localStorage.setItem('refresh_token', data?.refresh_token);
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -74,7 +74,7 @@ function FormAccountLogin() {
 
   const handleGetDetailUser = async (id, access_token) => {
     const res = await UserServices.getDetailrUser(id, access_token);
-    const text = dispatch(updateUser({ ...res?.data, access_token }));
+    dispatch(updateUser({ ...res?.data, access_token }));
   };
   const handleSubmit = (event) => {
     event.preventDefault();
