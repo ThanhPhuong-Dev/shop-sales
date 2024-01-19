@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-export const axiosJWT = axios.create();
+export const axiosJWT = axios.create({
+  withCredentials: true
+});
 
 export const loginUser = async (data) => {
-  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/login`, data);
+  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/login`, data, {
+    withCredentials: true
+  });
   return res.data;
 };
 
@@ -31,3 +35,4 @@ export const refreshToken = async () => {
   });
   return res.data;
 };
+
