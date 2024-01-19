@@ -10,49 +10,57 @@ import { useDispatch } from 'react-redux';
 import { updateUser } from './redux/Silde/userSilde';
 
 function App() {
-  let StorageRefresh = 
+ 
+
+  const dispatch = useDispatch();
   useEffect(() => {
-    UserServices.refreshToken();
+    const { storageData, decoded } = handleDecoded();
+    if (decoded?.id) {
+      handleGetDetailUser(decoded?.id, storageData);
+    }
   }, []);
 
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   const { storageData, decoded } = handleDecoded();
-  //   if (decoded?.id) {
-  //     handleGetDetailUser(decoded?.id, storageData);
-  //   }
-  // }, []);
+  const handleDecoded = () => {
+    let storageData = localStorage.getItem('access_token');
+    let decoded = {};
+    if (storageData) {
+      decoded = jwtDecode(storageData);
+    }
+    return { storageData, decoded };
+  };
 
-  // const handleDecoded = () => {
-  //   let storageData = localStorage.getItem('access_token');
-  //   let storageRefresh = localStorage.getItem('refresh_token');
-  //   let decoded = {};
-  //   if (storageData) {
-  //     decoded = jwtDecode(storageData);
-  //   }
-  //   return { storageData, decoded };
-  // };
+  
+  let isRefreshing = false;
+  UserServices.axiosJWT.interceptors.request.use(
+    function (config) {
+      const currentTime = new Date();
+      const { decoded } = handleDecoded();
+      if (decoded?.exp < currentTime.getTime() / 1000 && !isRefreshing) {
+        console.log('davao');
+        isRefreshing = true;
+        return UserServices.refreshToken()
+          .then((data) => {
+            config.headers['access_token'] = `Bearer ${data?.access_token}`;
+            isRefreshing = false;
+            return config;
+          })
+          .catch((error) => {
+            isRefreshing = false;
+            return Promise.reject(error);
+          });
+      }
 
-  // UserServices.axiosJWT.interceptors.request.use(
-  //   function async(config) {
-  //     const currentTime = new Date();
-  //     const { decoded } = handleDecoded();
-  //     if (decoded?.exp < currentTime.getTime() / 1000) {
-  //       const data = UserServices.refreshToken();
-  //       config.headers['access_token'] = `Beare ${data?.access_token}`;
-  //     }
-  //     return config;
-  //   },
-  //   function (error) {
-  //     // Do something with request error
-  //     return Promise.reject(error);
-  //   }
-  // );
+      return config;
+    },
+    function (error) {
+      return Promise.reject(error);
+    }
+  );
 
-  // const handleGetDetailUser = async (id, access_token) => {
-  //   const res = await UserServices.getDetailrUser(id, access_token);
-  //   dispatch(updateUser({ ...res?.data, access_token }));
-  // };
+  const handleGetDetailUser = async (id, access_token) => {
+    const res = await UserServices.getDetailrUser(id, access_token);
+    dispatch(updateUser({ ...res?.data, access_token }));
+  };
 
   return (
     <div>
