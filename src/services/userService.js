@@ -36,3 +36,9 @@ export const refreshToken = async () => {
   return res.data;
 };
 
+export const logOutUser = async () => {
+  const res = await axiosJWT.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/log-out`, {
+    withCredentials: true
+  });
+  return res.data;
+};

@@ -10,8 +10,6 @@ import { useDispatch } from 'react-redux';
 import { updateUser } from './redux/Silde/userSilde';
 
 function App() {
- 
-
   const dispatch = useDispatch();
   useEffect(() => {
     const { storageData, decoded } = handleDecoded();
@@ -29,7 +27,6 @@ function App() {
     return { storageData, decoded };
   };
 
-  
   let isRefreshing = false;
   UserServices.axiosJWT.interceptors.request.use(
     function (config) {
