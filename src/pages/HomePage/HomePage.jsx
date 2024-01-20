@@ -10,7 +10,7 @@ function HomePages() {
     <Box
       // maxWidth="lg"
       sx={{
-        px: 2
+        // px: 2
         // height: '100vh',
         // background: 'blue'
         // marginTop: '80px'

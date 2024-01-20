@@ -55,7 +55,6 @@ function FormAccountLogin() {
   });
 
   const { data, isSuccess, isError, error } = mutation;
-  console.log('data', data);
   useEffect(() => {
     if (isSuccess) {
       navgiate('/');
