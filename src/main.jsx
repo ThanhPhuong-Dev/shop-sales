@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
-      {/* <CssBaseline /> */}
+      <CssBaseline />
       <App />
     </Provider>
     <ReactQueryDevtools initialIsOpen={false} />

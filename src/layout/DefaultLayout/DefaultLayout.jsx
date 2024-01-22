@@ -5,7 +5,7 @@ function DefaultLayout({ children }) {
   return (
     <div>
       <HeaderComponent></HeaderComponent>
-      <Container size="lg" sx={{ marginTop: '80px', paddingTop: '8px', background: '#ffffff', pr: 0 }}>
+      <Container size="lg" sx={{ marginTop: '80px', paddingTop: '8px', background: '#ffffff', px: 0 }}>
         {children}
       </Container>
     </div>
