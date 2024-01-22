@@ -10,9 +10,11 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import * as UserServices from '~/services/userService';
 import { useDispatch } from 'react-redux';
 import { resetUser } from '~/redux/Silde/userSilde';
+import { useNavigate } from 'react-router-dom';
 
 function AvatarComponent({ user }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -25,6 +27,7 @@ function AvatarComponent({ user }) {
   const handleLogOut = async () => {
     await UserServices.logOutUser();
     localStorage.removeItem('access_token');
+    navigate('/')
     dispatch(resetUser());
   };
   return (
@@ -64,7 +67,7 @@ function AvatarComponent({ user }) {
         {user?.avatar ? (
           <Avatar
             alt="Remy Sharp"
-            src={user?.image}
+            src={user?.avatar}
             sx={{
               bgcolor: '#ef6c00',
               width: '30px',
@@ -144,7 +147,7 @@ function AvatarComponent({ user }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => navigate('/profile')}>
           <AccountCircleIcon></AccountCircleIcon>
           <Typography>Thông Tin Người Dùng</Typography>
         </MenuItem>

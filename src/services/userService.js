@@ -42,3 +42,9 @@ export const logOutUser = async () => {
   });
   return res.data;
 };
+
+export const updateUser = async (id, data) => {
+
+  const res = await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/update/${id}`, { ...data });
+  return res.data;
+};

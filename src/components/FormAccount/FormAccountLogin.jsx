@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Box, IconButton, InputAdornment, Typography } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/Silde/userSilde';
+import useDebounce from '~/utils/Debounce';
+
 
 const fadeLoading = keyframes`
   from {
@@ -32,8 +34,10 @@ function FormAccountLogin() {
   const [showPassWord, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataError, setDataError] = useState(null);
+
+  console.log('render');
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+    setEmail(event?.target?.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -43,6 +47,7 @@ function FormAccountLogin() {
   const handleShowPassWord = () => {
     setShowPassword((eventShowPassword) => !eventShowPassword);
   };
+
   const handleLoading = () => {
     setLoading(true);
     setTimeout(() => {
@@ -113,7 +118,7 @@ function FormAccountLogin() {
         ></InputForm>
 
         <Button
-          disabled={!email.length || !password.length}
+          disabled={!email?.length || !password?.length}
           variant="contained"
           color="primary"
           type="submit"
