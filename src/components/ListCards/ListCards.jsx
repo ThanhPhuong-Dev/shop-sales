@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import CardComponent from './CardComponent/CardComponent';
 
-function ListCards({ indexCol }) {
+function ListCards({ indexCol, productData }) {
   return (
     <Box
       sx={{
@@ -11,18 +11,9 @@ function ListCards({ indexCol }) {
         gap: 2
       }}
     >
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
-      <CardComponent></CardComponent>
+      {productData?.data.map((product) => (
+        <CardComponent key={product._id} product={product}></CardComponent>
+      ))}
     </Box>
   );
 }

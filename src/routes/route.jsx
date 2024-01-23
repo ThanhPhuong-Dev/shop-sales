@@ -1,5 +1,6 @@
 import Login from '~/pages/Account/Login';
 import SignUp from '~/pages/Account/SignUp';
+import AdminPage from '~/pages/AdminPage/AdminPage';
 import HomePages from '~/pages/HomePage/HomePage';
 import OrderPage from '~/pages/OrderPage/OrderPage';
 import ProductDetailPage from '~/pages/ProductDetailPage/ProductDetailPage';
@@ -15,5 +16,6 @@ export const publicRouter = [
   { path: '/product-details', element: ProductDetailPage, isShowHeader: true },
   { path: '/profile', element: ProfileUser, isShowHeader: true },
   { path: '/register', element: SignUp, isShowHeader: false },
-  { path: '/login', element: Login, isShowHeader: false }
+  { path: '/login', element: Login, isShowHeader: false },
+  { path: '/system/admin', element: AdminPage, isShowHeader: false, isPrivate: true }
 ];

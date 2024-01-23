@@ -6,11 +6,12 @@ import axios from 'axios';
 // import { isJsonString } from './utils/isJsonString';
 import { jwtDecode } from 'jwt-decode';
 import * as UserServices from './services/userService';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from './redux/Silde/userSilde';
 
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   useEffect(() => {
     const { storageData, decoded } = handleDecoded();
     if (decoded?.id) {
@@ -65,11 +66,13 @@ function App() {
         <Routes>
           {publicRouter.map((route) => {
             const Page = route.element;
+            console.log('page', user.isAdmin);
+            const isCheckAuth = !route.isPrivate || user?.isAdmin;
             const Layout = route.isShowHeader ? DefaultLayout : Fragment;
             return (
               <Route
                 key={route.path}
-                path={route.path}
+                path={isCheckAuth ? route.path : '*'}
                 element={
                   <Layout>
                     <Page></Page>
