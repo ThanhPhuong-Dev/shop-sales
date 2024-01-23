@@ -66,13 +66,12 @@ function App() {
         <Routes>
           {publicRouter.map((route) => {
             const Page = route.element;
-            console.log('page', user.isAdmin);
             const isCheckAuth = !route.isPrivate || user?.isAdmin;
             const Layout = route.isShowHeader ? DefaultLayout : Fragment;
             return (
               <Route
                 key={route.path}
-                path={isCheckAuth ? route.path : '*'}
+                path={isCheckAuth ? route.path : '/notFound'}
                 element={
                   <Layout>
                     <Page></Page>
