@@ -8,7 +8,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import * as UserServices from '~/services/userService';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { resetUser } from '~/redux/Silde/userSilde';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ function AvatarComponent({ user }) {
   const handleLogOut = async () => {
     await UserServices.logOutUser();
     localStorage.removeItem('access_token');
-    navigate('/')
+    navigate('/');
     dispatch(resetUser());
   };
   return (
@@ -151,10 +151,12 @@ function AvatarComponent({ user }) {
           <AccountCircleIcon></AccountCircleIcon>
           <Typography>Thông Tin Người Dùng</Typography>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <AccountCircleIcon></AccountCircleIcon>
-          <Typography>Tài Khoản Của Tôi</Typography>
-        </MenuItem>
+        {user?.isAdmin && (
+          <MenuItem onClick={() => navigate('/system/admin')}>
+            <AccountCircleIcon></AccountCircleIcon>
+            <Typography>Quản Lý Hệ Thống</Typography>
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem onClick={handleClose}>
           <PersonAddIcon></PersonAddIcon>
