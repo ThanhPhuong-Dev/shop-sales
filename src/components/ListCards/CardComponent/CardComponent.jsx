@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import { keyframes } from '@emotion/react';
+import formatNumberWithK from '~/utils/formatNumberWithK';
 
 const fadeIn = keyframes`
   from {
@@ -15,7 +16,9 @@ const fadeIn = keyframes`
   }
 `;
 
-function CardComponent() {
+function CardComponent({ product }) {
+
+  const stars = Array.from({ length: product?.rating }, (_, index) => <StarIcon key={index} />);
   return (
     <Card
       sx={{
@@ -44,6 +47,7 @@ function CardComponent() {
       >
         <img
           src="https://down-vn.img.susercontent.com/file/76c36bd87ff2eb5887d9ad3516111869"
+          // src={product?.image}
           style={{
             width: '100%',
             height: '100%'
@@ -55,7 +59,8 @@ function CardComponent() {
         sx={{
           height: 140
         }}
-        image="https://img.ws.mms.shopee.vn/c7db377b177fc8e2ff75a769022dcc23"
+        // image="https://img.ws.mms.shopee.vn/c7db377b177fc8e2ff75a769022dcc23"
+        image={product?.image}
         title="green iguana"
       />
       <CardContent sx={{ p: 1, paddingBottom: '8px !important' }}>
@@ -70,11 +75,13 @@ function CardComponent() {
             WebkitLineClamp: 2
           }}
         >
-          Huaqoo dép sandal nữ giày sandal nữ dép đế cao Đệm êm Thể thao và thời trang Độn đế Thời thượng FDL2410247
-          1Z240103
+          {product?.name}
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ fontWeight: 700, color: 'red', pt: 1 }}>
-          2.000.000.000đ
+          {product?.price}đ
+          <Typography sx={{ ml: 1, fontSize: '1.2rem' }} variant="span">
+            {product?.discount}%
+          </Typography>
         </Typography>
 
         <Box
@@ -96,21 +103,17 @@ function CardComponent() {
               }
             }}
           >
-            <StarIcon></StarIcon>
-            <StarIcon></StarIcon>
-            <StarIcon></StarIcon>
-            <StarIcon></StarIcon>
-            <StarIcon></StarIcon>
+            {stars}
           </Box>
-          <Typography>Đã Bán 5.4k</Typography>
+          <Typography>Đã Bán {formatNumberWithK(product?.sold)}</Typography>
         </Box>
         <Typography
           sx={{
-            pt: 1,
+            pt: 2,
             fontSize: '1.4rem'
           }}
         >
-          Hà Nội
+          {product?.location}
         </Typography>
       </CardContent>
     </Card>
