@@ -2,7 +2,7 @@ import { Avatar, Box, Button, FormControl, Grid, Input, TextField, Typography } 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import cutTheFirstLetter from '~/utils/cutTheFirstLetter';
-import InputProfile from './InputProfile/InputProfile';
+import InputComponent from '../../components/InputComponent/InputComponent';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '~/services/userService';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,6 @@ function ProfileUser() {
   const [gender, setGender] = useState(user?.gender);
   const [errorMessage, setErrorMessage] = useState('');
   const userId = user?.id;
-  console.log('gender', gender);
   useEffect(() => {
     setName(user?.name);
     setEmail(user?.email);
@@ -82,7 +81,7 @@ function ProfileUser() {
     return UserServices.updateUser(userId, data);
   });
   const { isSuccess, isError, error } = mutation;
-  console.log('error', error);
+
   useEffect(() => {
     if (isSuccess) {
       navigate('/');
@@ -151,34 +150,38 @@ function ProfileUser() {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2} pt={4}>
             <Grid item xs={8} md={8}>
-              <InputProfile
+              <InputComponent
                 label="Tên Người Dùng"
                 id="name"
                 value={name}
                 type="text"
                 handleChange={handleNameChange}
-              ></InputProfile>
-              <InputProfile
+                width="400px"
+              ></InputComponent>
+              <InputComponent
                 label="Email"
                 id="email"
                 value={email}
                 type="text"
                 handleChange={handleEmailChange}
-              ></InputProfile>
-              <InputProfile
+                width="400px"
+              ></InputComponent>
+              <InputComponent
                 label="Số Điện Thoại"
                 id="phone"
                 value={phone}
                 type="text"
                 handleChange={handlePhoneChange}
-              ></InputProfile>
-              <InputProfile
+                width="400px"
+              ></InputComponent>
+              <InputComponent
                 label="Địa chỉ"
                 id="address"
                 value={address}
                 type="text"
                 handleChange={handleAddressChange}
-              ></InputProfile>
+                width="400px"
+              ></InputComponent>
 
               <RadioProfile name="Gender" value={gender} handleChange={handleGenderChange}></RadioProfile>
 

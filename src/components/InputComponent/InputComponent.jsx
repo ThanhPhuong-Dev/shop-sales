@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-function InputProfile({ label, id, value, type, handleChange }) {
+function InputComponent({ label, id, value, type, handleChange, width, handleBlur }) {
   return (
     <Box
       sx={{
@@ -19,11 +19,12 @@ function InputProfile({ label, id, value, type, handleChange }) {
         id={id}
         value={value}
         type={type}
-        style={{ maxWidth: '400px', minWidth: '400px', outline: 'none', padding: '12px' }}
+        style={{ maxWidth: `${width}`, minWidth: `${width}`, outline: 'none', padding: '12px' }}
         onChange={handleChange}
+        onBlur={handleBlur}
       ></input>
     </Box>
   );
 }
 
-export default InputProfile;
+export default InputComponent;

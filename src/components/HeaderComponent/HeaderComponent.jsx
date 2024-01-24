@@ -4,12 +4,13 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import AvatarComponent from '../AvatarComponent/AvatarComponent';
+
 function HeaderComponent() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
