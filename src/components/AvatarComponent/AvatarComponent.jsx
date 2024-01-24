@@ -43,7 +43,7 @@ function AvatarComponent({ user }) {
           cursor: 'pointer',
           transition: '0.5s',
           height: '37px',
-          minWidth: '180px',
+          minWidth: '210px',
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis',
