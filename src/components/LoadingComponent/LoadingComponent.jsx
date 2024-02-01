@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+import { useState, useEffect } from 'react';
 
 const LoadingComponent = () => {
+  const [visible, setVisible] = useState(true);
+
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      // Điều này sẽ chạy sau 10 giây
-      console.log('Chạy sau 10 giây');
-    }, 10000);
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 2000); // 2000 milliseconds = 2 seconds
 
-    // Trả về một hàm sẽ được gọi khi component unmount hoặc khi useEffect chạy lại
-    return () => clearTimeout(timeoutId);
-  }, []); // Thêm [] để chỉ chạy một lần khi component được mount
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array ensures this effect runs only once
 
-  return (
+  return visible ? (
     <Box
       sx={{
         position: 'fixed',
@@ -29,7 +29,7 @@ const LoadingComponent = () => {
     >
       <CircularProgress />
     </Box>
-  );
+  ) : null;
 };
 
 export default LoadingComponent;
