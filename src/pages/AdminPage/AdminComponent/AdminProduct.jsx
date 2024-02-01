@@ -7,6 +7,57 @@ import UploadComponent from '~/components/InputComponent/UploadComponent/UploadC
 import CloseIcon from '@mui/icons-material/Close';
 import * as ProductServices from '~/services/productService';
 import { useMutationHook } from '~/hooks/useMutationHook';
+import { useQuery } from 'react-query';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+
+const renderAction = (id) => {
+  const handleEditClick = () => {
+    // Gửi ID về một hàm xử lý hoặc component cha
+    console.log('Edit clicked for ID:', id);
+  };
+
+  return (
+    <Box
+      gap={2}
+      sx={{
+        display: 'flex',
+        // justifyContent: 'space-between',
+        alignItems: 'center',
+        '& .MuiSvgIcon-root': {
+          fontSize: '2rem'
+        }
+      }}
+    >
+      <DeleteIcon></DeleteIcon>
+      <ModeEditIcon onClick={handleEditClick}></ModeEditIcon>
+    </Box>
+  );
+};
+
+const columns = [
+  { field: '_id', headerName: 'ID', width: 200 },
+  { field: 'name', headerName: 'Name', width: 150 },
+  { field: 'price', headerName: 'Price', width: 130 },
+  { field: 'countInStock', headerName: 'CountInStock', width: 130 },
+  {
+    field: 'type',
+    headerName: 'Type',
+    width: 130
+  },
+  {
+    field: 'description',
+    headerName: 'Description',
+    sortable: false,
+    width: 160
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    width: 160,
+    renderCell: (params) => renderAction(params.row._id)
+  }
+];
 
 function AdminProduct() {
   const [openModal, setOpenModal] = useState(false);
@@ -34,6 +85,19 @@ function AdminProduct() {
     boxShadow: 24,
     p: 4
   };
+
+  const fetchGetDataProduct = async () => {
+    const res = await ProductServices.getAllProduct();
+    return res;
+  };
+
+  const { isLoading: LoadingProduct, data: productData } = useQuery(['products'], fetchGetDataProduct);
+
+  const dataTable =
+    productData?.data.length &&
+    productData?.data?.map((product) => {
+      return { ...product, key: product._id };
+    });
 
   //onChangeInput
   const handleChangeProduct = (e) => {
@@ -63,7 +127,7 @@ function AdminProduct() {
     return ProductServices.createProduct(data);
   });
 
-  const { data, isLoading, isError, isSuccess, error } = mutation;
+  const { isError, isSuccess, error } = mutation;
 
   useEffect(() => {
     if (isSuccess) {
@@ -115,8 +179,13 @@ function AdminProduct() {
       <Button sx={{ width: '150px', height: '150px', border: '5px solid #34495e' }} onClick={() => setOpenModal(true)}>
         <AddIcon sx={{ fontSize: '10rem' }}></AddIcon>
       </Button>
-      <TableComponent></TableComponent>
-
+      <TableComponent
+        products={productData?.data}
+        columns={columns}
+        dataProduct={dataTable}
+        LoadingProduct={LoadingProduct}
+        getRowId={(dataTable) => dataTable._id}
+      ></TableComponent>
       <Modal
         open={openModal}
         // onClose={() => setOpenModal(false)}

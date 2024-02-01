@@ -11,7 +11,7 @@ function AdminUser() {
       <Button sx={{ width: '150px', height: '150px', border: '5px solid #34495e' }}>
         <AddIcon sx={{ fontSize: '10rem' }}></AddIcon>
       </Button>
-      <TableComponent></TableComponent>
+      {/* <TableComponent></TableComponent> */}
     </Box>
   );
 }

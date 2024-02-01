@@ -11,11 +11,13 @@ import * as UserServices from '~/services/userService';
 import { useDispatch, useSelector } from 'react-redux';
 import { resetUser } from '~/redux/Silde/userSilde';
 import { useNavigate } from 'react-router-dom';
+import LoadingComponent from '../LoadingComponent/LoadingComponent';
 
 function AvatarComponent({ user }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -25,6 +27,7 @@ function AvatarComponent({ user }) {
   };
 
   const handleLogOut = async () => {
+    setLoading(true);
     await UserServices.logOutUser();
     localStorage.removeItem('access_token');
     navigate('/');
@@ -32,6 +35,7 @@ function AvatarComponent({ user }) {
   };
   return (
     <>
+      {loading && <LoadingComponent></LoadingComponent>}
       <Box
         sx={{
           display: 'flex',
