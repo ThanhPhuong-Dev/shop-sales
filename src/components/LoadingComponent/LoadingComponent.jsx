@@ -1,13 +1,13 @@
 import { Box, CircularProgress } from '@mui/material';
 import { useState, useEffect } from 'react';
 
-const LoadingComponent = () => {
+const LoadingComponent = ({ time }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 2000); // 2000 milliseconds = 2 seconds
+    }, time); // 2000 milliseconds = 2 seconds
 
     return () => clearTimeout(timer);
   }, []); // Empty dependency array ensures this effect runs only once

@@ -35,7 +35,7 @@ function AvatarComponent({ user }) {
   };
   return (
     <>
-      {loading && <LoadingComponent></LoadingComponent>}
+      {loading && <LoadingComponent time={2000}></LoadingComponent>}
       <Box
         sx={{
           display: 'flex',

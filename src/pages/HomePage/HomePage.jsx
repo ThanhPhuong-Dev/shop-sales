@@ -22,7 +22,7 @@ function HomePages() {
   return (
     <>
       {isLoading ? (
-        <LoadingComponent></LoadingComponent>
+        <LoadingComponent time={2000}></LoadingComponent>
       ) : (
         <Box
           // maxWidth="lg"
