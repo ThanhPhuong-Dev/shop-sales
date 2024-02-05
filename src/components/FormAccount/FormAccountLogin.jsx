@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/Silde/userSilde';
-
+import * as Toast from '~/utils/reacttoasts';
 
 const fadeLoading = keyframes`
   from {
@@ -62,6 +62,7 @@ function FormAccountLogin() {
   useEffect(() => {
     if (isSuccess) {
       navgiate('/');
+      Toast.successToast({ title: 'Đăng Nhập Thành Công' });
       localStorage.setItem('access_token', data?.access_token);
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
@@ -70,6 +71,7 @@ function FormAccountLogin() {
         }
       }
     } else if (isError) {
+      Toast.errorToast({ title: 'Đăng Nhập Thất Bại' });
       setDataError(error.response.data.message);
     }
   }, [isSuccess, isError]);
