@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Modal, Typography } from '@mui/material';
+import { Box, Button, IconButton, Modal, Rating, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TableComponent from '~/components/TableComponent/TableComponent';
 import { useEffect, useState } from 'react';
@@ -11,21 +11,25 @@ import { useQuery } from 'react-query';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DrawerComponent from '~/components/DrawerComponent/DrawerComponent';
-import { useSelector } from 'react-redux';
+import * as Toast from '~/utils/reactToasts';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
+import SpinnersComonent from '~/components/LoadingComponent/SpinnersComonent';
 
 function AdminProduct() {
   const [openModal, setOpenModal] = useState(false);
+  const [openRemoveModal, setOpenRemoveModal] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorProduct, setErrorProduct] = useState('');
   const [selectedRows, setSelectedRows] = useState('');
+  const [selectedName, setSelectedName] = useState('');
   const [stateProduct, setStateProduct] = useState({
     name: '',
     type: '',
     countInStock: '',
     price: '',
     description: '',
-    rating: '',
+    rating: 1,
     location: '',
     discount: '',
     sold: ''
@@ -42,15 +46,14 @@ function AdminProduct() {
     sold: '',
     image: ''
   });
-  // const userAccess = localStorage.getItem('access_token');
-  const user = useSelector((state) => state.user);
-  //css boxModal
+  const userAccess = localStorage.getItem('access_token');
+
   const styleModal = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 550,
+    maxWidth: 550,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -70,6 +73,54 @@ function AdminProduct() {
     productData?.data?.map((product) => {
       return { ...product, key: product._id };
     });
+
+  const renderAction = () => {
+    return (
+      <Box
+        gap={2}
+        sx={{
+          display: 'flex',
+          // justifyContent: 'space-between',
+          alignItems: 'center',
+          '& .MuiSvgIcon-root': {
+            fontSize: '2rem'
+          }
+        }}
+      >
+        <DeleteIcon sx={{ color: '#d63031' }} onClick={() => setOpenRemoveModal(true)}></DeleteIcon>
+        <ModeEditIcon sx={{ color: '#74b9ff' }} onClick={handleEditClick}></ModeEditIcon>
+      </Box>
+    );
+  };
+
+  const columns = [
+    { field: '_id', headerName: 'ID', width: 200 },
+    { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'price', headerName: 'Price', width: 130 },
+    { field: 'countInStock', headerName: 'CountInStock', width: 130 },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 130
+    },
+    {
+      field: 'rating',
+      headerName: 'Rating',
+      width: 60
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      sortable: false,
+      width: 160
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 160,
+      renderCell: (params) => renderAction(params.row._id)
+    }
+  ];
   //1end----------------- Lấy Dữ liệu Data đưa về table-----------------
 
   //2------------Xử Lý khi bấm vào chỉnh sửa sản phẩm gồm :hiện thanh drawer và get lại productDetail và submit
@@ -93,7 +144,7 @@ function AdminProduct() {
   const handleChangeProductDetails = (e) => {
     setStateUpdateProduct({
       ...stateUpdateProduct,
-      [e.target.id]: e.target.value
+      [e.target.name]: e.target.value
     });
   };
 
@@ -139,56 +190,16 @@ function AdminProduct() {
     }
   }, [selectedRows]);
 
-  const renderAction = () => {
-    return (
-      <Box
-        gap={2}
-        sx={{
-          display: 'flex',
-          // justifyContent: 'space-between',
-          alignItems: 'center',
-          '& .MuiSvgIcon-root': {
-            fontSize: '2rem'
-          }
-        }}
-      >
-        <DeleteIcon></DeleteIcon>
-        <ModeEditIcon onClick={handleEditClick}></ModeEditIcon>
-      </Box>
-    );
-  };
-  const columns = [
-    { field: '_id', headerName: 'ID', width: 200 },
-    { field: 'name', headerName: 'Name', width: 150 },
-    { field: 'price', headerName: 'Price', width: 130 },
-    { field: 'countInStock', headerName: 'CountInStock', width: 130 },
-    {
-      field: 'type',
-      headerName: 'Type',
-      width: 130
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      sortable: false,
-      width: 160
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      width: 160,
-      renderCell: (params) => renderAction(params.row._id)
-    }
-  ];
-
   const handleClickTable = (selectionModel) => {
+    setSelectedName(selectionModel.row.name);
+
     setSelectedRows(selectionModel.id);
   };
 
   //Xử lý submit update dữ liệu vào data bằng useMutation
 
   const mutationUpdate = useMutationHook((data) => {
-    return ProductServices.updateProduct(selectedRows, user?.access_token, data);
+    return ProductServices.updateProduct(selectedRows, userAccess, data);
   });
 
   const { isLoading: loadingUpdate, isSuccess: successUpdate, isError: errorUpdate, data } = mutationUpdate;
@@ -196,8 +207,9 @@ function AdminProduct() {
   useEffect(() => {
     if (successUpdate && data?.status === 'OK') {
       setOpenDrawer(false);
+      Toast.successToast({ title: 'Cập nhật thành công ' });
     } else if (errorUpdate) {
-      console.log('bi loi');
+      Toast.errorToast({ title: 'Cập nhật thất bại ' });
     }
   }, [successUpdate]);
 
@@ -214,12 +226,48 @@ function AdminProduct() {
   };
   //2end---------Xử Lý khi bấm vào chỉnh sửa sản phẩm gồm :hiện thanh drawer và get lại productDetail và submit
 
-  //3-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới------------
+  //3-------------Xử lý khi bấm nút xóa sản phẩm : Hiện thanh modal và bấm có----------
+
+  const mutationRemove = useMutationHook(async (data) => {
+    const res = await ProductServices.removeProduct(data?.selectedRows, data?.userAccess);
+    return res;
+  });
+
+  const { isLoading: loadingRemove, isSuccess: successRemove, isError: errorRemove } = mutationRemove;
+  // const fetchRemoveProduct = async () => {
+  //   const res = await ProductServices.removeProduct(selectedRows, userAccess);
+  //   console.log('res', res);
+  //   return res;
+  // };
+  useEffect(() => {
+    if (successRemove) {
+      Toast.successToast({ title: `Xóa sản phẩm ${selectedName} thành công` });
+      setOpenRemoveModal(false);
+    } else if (errorRemove) {
+      Toast.errorToast({ title: `Xóa sản phẩm ${selectedName} thất bại` });
+      setOpenRemoveModal(false);
+    }
+  }, [successRemove, errorRemove]);
+
+  const handleRemoveProduct = () => {
+    mutationRemove.mutate(
+      { selectedRows, userAccess },
+      {
+        onSettled: () => {
+          ProductQuery.refetch();
+        }
+      }
+    );
+  };
+  //3end-------------Xử lý khi bấm nút xóa sản phẩm : Hiện thanh modal và bấm có----------
+
+  //4-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới------------
   //onChangeInput
   const handleChangeProduct = (e) => {
+    console.log('e', e.target.name, e.target.value);
     setStateProduct({
       ...stateProduct,
-      [e.target.id]: e.target.value
+      [e.target.name]: e.target.value
     });
   };
 
@@ -287,10 +335,11 @@ function AdminProduct() {
     e.preventDefault();
     mutation.mutate({ ...stateProduct });
   };
-  //3end-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới-------
+  //4end-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới-------
 
   return (
     <Box sx={{ pt: 5 }}>
+      {loadingRemove && <LoadingComponent time={4000}></LoadingComponent>}
       <Typography py={2} sx={{ fontSize: '1.5rem', fontWeight: 700 }}>
         Quản Lý Sản Phẩm
       </Typography>
@@ -343,6 +392,7 @@ function AdminProduct() {
             <InputComponent
               label="Name"
               id="name"
+              name="name"
               value={stateProduct.name}
               handleChange={handleChangeProduct}
               width="350px"
@@ -350,6 +400,7 @@ function AdminProduct() {
             <InputComponent
               label="Type"
               id="type"
+              name="type"
               value={stateProduct.type}
               handleChange={handleChangeProduct}
               width="350px"
@@ -357,6 +408,7 @@ function AdminProduct() {
             <InputComponent
               label="Count In Stock"
               id="countInStock"
+              name="countInStock"
               value={stateProduct.countInStock}
               handleChange={handleChangeProduct}
               width="350px"
@@ -364,6 +416,7 @@ function AdminProduct() {
             <InputComponent
               label="Price"
               id="price"
+              name="price"
               value={stateProduct.price}
               handleChange={handleChangeProduct}
               width="350px"
@@ -371,20 +424,23 @@ function AdminProduct() {
             <InputComponent
               label="Description"
               id="description"
+              name="description"
               value={stateProduct.description}
               handleChange={handleChangeProduct}
               width="350px"
             ></InputComponent>
-            <InputComponent
+            {/* <InputComponent
               label="Rating"
               id="rating"
               value={stateProduct.rating}
               handleChange={handleChangeProduct}
               width="350px"
-            ></InputComponent>
+            ></InputComponent> */}
+
             <InputComponent
               label="Location"
               id="location"
+              name="location"
               value={stateProduct.location}
               handleChange={handleChangeProduct}
               width="350px"
@@ -392,6 +448,7 @@ function AdminProduct() {
             <InputComponent
               label="Discount"
               id="discount"
+              name="discount"
               value={stateProduct.discount}
               handleChange={handleChangeProduct}
               width="350px"
@@ -399,12 +456,36 @@ function AdminProduct() {
             <InputComponent
               label="Sold"
               id="sold"
+              name="sold"
               value={stateProduct.sold}
               handleChange={handleChangeProduct}
               width="350px"
             ></InputComponent>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                '& .MuiTypography-root': {
+                  fontSize: '1.4rem',
+                  fontWeight: 600,
+                  mr: 6
+                },
+                '& .MuiRating-root': {
+                  fontSize: '2.4rem'
+                }
+              }}
+            >
+              <Typography>Rating</Typography>
+              <Rating
+                id="rating"
+                name="rating"
+                value={parseInt(stateProduct.rating)}
+                onChange={handleChangeProduct}
+              ></Rating>
+            </Box>
             <Box sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
-              <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 12 }}>Image</Typography>
+              <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 6 }}>Image</Typography>
               <UploadComponent handleImageChange={handleImageChange}></UploadComponent>
               {stateProduct?.image && (
                 <img src={stateProduct.image} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
@@ -482,12 +563,13 @@ function AdminProduct() {
               }
             }}
           >
-            <Typography>Thông Tin Sản Phẩm</Typography>
+            <Typography>Thông Tin Sản Phẩm {selectedName}</Typography>
           </Box>
           <form onSubmit={handleSubmitUpdateForm}>
             <InputComponent
               label="Name"
               id="name"
+              name="name"
               value={stateUpdateProduct.name}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -495,6 +577,7 @@ function AdminProduct() {
             <InputComponent
               label="Type"
               id="type"
+              name="type"
               value={stateUpdateProduct.type}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -502,6 +585,7 @@ function AdminProduct() {
             <InputComponent
               label="Count In Stock"
               id="countInStock"
+              name="countInStock"
               value={stateUpdateProduct.countInStock}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -509,6 +593,7 @@ function AdminProduct() {
             <InputComponent
               label="Price"
               id="price"
+              name="price"
               value={stateUpdateProduct.price}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -516,20 +601,15 @@ function AdminProduct() {
             <InputComponent
               label="Description"
               id="description"
+              name="description"
               value={stateUpdateProduct.description}
               handleChange={handleChangeProductDetails}
               width="350px"
             ></InputComponent>
             <InputComponent
-              label="Rating"
-              id="rating"
-              value={stateUpdateProduct.rating}
-              handleChange={handleChangeProductDetails}
-              width="350px"
-            ></InputComponent>
-            <InputComponent
               label="Location"
-              id="location"
+              id="description"
+              name="location"
               value={stateUpdateProduct.location}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -537,6 +617,7 @@ function AdminProduct() {
             <InputComponent
               label="Discount"
               id="discount"
+              name="discount"
               value={stateUpdateProduct.discount}
               handleChange={handleChangeProductDetails}
               width="350px"
@@ -544,10 +625,34 @@ function AdminProduct() {
             <InputComponent
               label="Sold"
               id="sold"
+              name="sold"
               value={stateUpdateProduct.sold}
               handleChange={handleChangeProductDetails}
               width="350px"
             ></InputComponent>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                '& .MuiTypography-root': {
+                  fontSize: '1.4rem',
+                  fontWeight: 600,
+                  mr: 6
+                },
+                '& .MuiRating-root': {
+                  fontSize: '2.4rem'
+                }
+              }}
+            >
+              <Typography>Rating</Typography>
+              <Rating
+                id="rating"
+                name="rating"
+                value={parseInt(stateUpdateProduct.rating)}
+                onChange={handleChangeProductDetails}
+              ></Rating>
+            </Box>
             <Box sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
               <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 12 }}>Image</Typography>
               <UploadComponent handleImageChange={handleImageChangeDetails}></UploadComponent>
@@ -594,6 +699,45 @@ function AdminProduct() {
           </form>
         </Box>
       </DrawerComponent>
+
+      {/* modal của xóa */}
+      <Modal
+        open={openRemoveModal}
+        // onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModal}>
+          <Typography
+            sx={{
+              fontSize: '1.6rem',
+              fontWeight: 600
+            }}
+          >
+            Bạn có chắc xóa sản phẩm {selectedName} không?
+          </Typography>
+          <Box
+            sx={{
+              mt: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              '& .MuiButtonBase-root': {
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                ml: 1
+              }
+            }}
+          >
+            <Button variant="outlined" onClick={() => setOpenRemoveModal(false)}>
+              Không
+            </Button>
+            <Button variant="contained" sx={{ backgroundColor: '#ff3838' }} onClick={handleRemoveProduct}>
+              Xóa
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }

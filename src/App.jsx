@@ -1,15 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRouter } from './routes/route';
 import DefaultLayout from './layout/DefaultLayout/DefaultLayout';
-import { Fragment, useEffect } from 'react';
-import axios from 'axios';
+import { Fragment, useEffect, useState } from 'react';
+// import axios from 'axios';
 // import { isJsonString } from './utils/isJsonString';
 import { jwtDecode } from 'jwt-decode';
 import * as UserServices from './services/userService';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from './redux/Silde/userSilde';
-
+import { toast, ToastContainer } from 'react-toastify';
 function App() {
+  const [accessUser, setAccessUser] = useState('');
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   useEffect(() => {
@@ -28,24 +29,31 @@ function App() {
     return { storageData, decoded };
   };
 
+  const handleGetDetailUser = async (id, access_token) => {
+    const res = await UserServices.getDetailrUser(id, access_token);
+    dispatch(updateUser({ ...res?.data, access_token }));
+  };
+
   let isRefreshing = false;
+
   UserServices.axiosJWT.interceptors.request.use(
-    function (config) {
+    async function (config) {
       const currentTime = new Date();
       const { decoded } = handleDecoded();
       if (decoded?.exp < currentTime.getTime() / 1000 && !isRefreshing) {
-        console.log('davao');
+        console.log('da vaop');
         isRefreshing = true;
-        return UserServices.refreshToken()
-          .then((data) => {
-            config.headers['access_token'] = `Bearer ${data?.access_token}`;
-            isRefreshing = false;
-            return config;
-          })
-          .catch((error) => {
-            isRefreshing = false;
-            return Promise.reject(error);
-          });
+        try {
+          const data = await UserServices.refreshToken();
+          console.log('dataaaa', data);
+          config.headers['access_token'] = `Bearer ${data?.access_token}`;
+          localStorage.setItem('access_token', data?.access_token);
+          isRefreshing = false;
+          return config;
+        } catch (error) {
+          isRefreshing = false;
+          return Promise.reject(error);
+        }
       }
 
       return config;
@@ -54,14 +62,9 @@ function App() {
       return Promise.reject(error);
     }
   );
-
-  const handleGetDetailUser = async (id, access_token) => {
-    const res = await UserServices.getDetailrUser(id, access_token);
-    dispatch(updateUser({ ...res?.data, access_token }));
-  };
-
   return (
     <div>
+      <ToastContainer></ToastContainer>
       <Router>
         <Routes>
           {publicRouter.map((route) => {
