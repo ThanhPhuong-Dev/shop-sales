@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 const CustomGridToolbar = () => {
@@ -24,7 +24,7 @@ const CustomGridToolbar = () => {
   );
 };
 
-function TableComponent({ columns, dataProduct = [], getRowId, onRowClick }) {
+function TableComponent({ columns, rows = [], getRowId, onRowClick, onRowSelectionModelChange }) {
   return (
     <>
       {<LoadingComponent time={2300}></LoadingComponent>}
@@ -32,7 +32,7 @@ function TableComponent({ columns, dataProduct = [], getRowId, onRowClick }) {
         <DataGrid
           slots={{ toolbar: CustomGridToolbar }}
           getRowId={getRowId}
-          rows={dataProduct}
+          rows={rows}
           columns={columns}
           initialState={{
             pagination: {
@@ -42,11 +42,19 @@ function TableComponent({ columns, dataProduct = [], getRowId, onRowClick }) {
           pageSizeOptions={[5, 10]}
           checkboxSelection
           onRowClick={onRowClick}
+          onRowSelectionModelChange={onRowSelectionModelChange}
           sx={{
             fontSize: '1.5rem',
             '& .MuiDataGrid-columnHeaderTitle': {
               fontWeight: 700
             }
+          }}
+          componentsProps={{
+            Footer: () => (
+              <div>
+                <Button>fasfdasdfsffffffffffffffffffffff</Button>
+              </div>
+            )
           }}
         />
       </Box>

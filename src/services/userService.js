@@ -29,6 +29,14 @@ export const getDetailrUser = async (id, access_token) => {
   return res.data;
 };
 
+export const getUserAll = async (access_token) => {
+  const res = await axiosJWT.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/getAllUser`, {
+    headers: {
+      access_token: `Beare ${access_token}`
+    }
+  });
+  return res.data;
+};
 export const refreshToken = async () => {
   const res = await axiosJWT.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/refresh-token`, {
     withCredentials: true
@@ -45,5 +53,16 @@ export const logOutUser = async () => {
 
 export const updateUser = async (id, data) => {
   const res = await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/update/${id}`, { ...data });
+  return res.data;
+};
+
+export const deleteUser = async (id, access_token) => {
+  console.log('iddddd', id);
+  console.log('access_tokenssssss', access_token);
+  const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/delete/${id}`, {
+    headers: {
+      access_token: `Beare ${access_token}`
+    }
+  });
   return res.data;
 };

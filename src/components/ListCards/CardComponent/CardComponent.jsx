@@ -17,7 +17,6 @@ const fadeIn = keyframes`
 `;
 
 function CardComponent({ product }) {
-
   const stars = Array.from({ length: product?.rating }, (_, index) => <StarIcon key={index} />);
   return (
     <Card
@@ -72,7 +71,7 @@ function CardComponent({ product }) {
             fontSize: '1.4rem',
             display: '-webkit-box',
             WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: 2
+            WebkitLineClamp: 1
           }}
         >
           {product?.name}
