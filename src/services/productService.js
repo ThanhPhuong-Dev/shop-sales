@@ -24,12 +24,19 @@ export const updateProduct = async (id, access_token, data) => {
 };
 
 export const removeProduct = async (id, access_token) => {
-  console.log('idddddd', id);
-  console.log('access_tokenssssss', access_token);
   const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/delete/${id}`, {
     headers: {
       access_token: `Beare ${access_token}`
     }
+  });
+  return res.data;
+};
+export const removeProductAll = async (data, access_token) => {
+  const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/delete-many`, {
+    headers: {
+      access_token: `Beare ${access_token}`
+    },
+    data
   });
   return res.data;
 };

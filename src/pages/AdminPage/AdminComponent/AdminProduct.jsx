@@ -13,13 +13,13 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DrawerComponent from '~/components/DrawerComponent/DrawerComponent';
 import * as Toast from '~/utils/reactToasts';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
-import SpinnersComonent from '~/components/LoadingComponent/SpinnersComonent';
-
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 function AdminProduct() {
   const [openModal, setOpenModal] = useState(false);
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [openRemoveAll, setOpenRemoveAll] = useState(false);
+  const [arrayProduct, setArrayProduct] = useState([]);
   const [errorProduct, setErrorProduct] = useState('');
   const [selectedRows, setSelectedRows] = useState('');
   const [selectedName, setSelectedName] = useState('');
@@ -47,7 +47,7 @@ function AdminProduct() {
     image: ''
   });
   const userAccess = localStorage.getItem('access_token');
-
+  console.log('arrayProduct', arrayProduct);
   const styleModal = {
     position: 'absolute',
     top: '50%',
@@ -261,10 +261,34 @@ function AdminProduct() {
   };
   //3end-------------Xử lý khi bấm nút xóa sản phẩm : Hiện thanh modal và bấm có----------
 
+  //4start-------------Xử lý khi bấm nút tất cả xóa sản phẩm :
+
+  const handleRowSelectionChange = (e) => {
+    setArrayProduct(e);
+  };
+
+  const mutationRemoveAll = useMutationHook(async (data) => {
+    const res = await ProductServices.removeProductAll(data?.arrayProduct, data?.userAccess);
+    return res;
+  });
+  const { isLoading: loadingRMAll, isSuccess: successRMAll, isError: errorRMAll } = mutationRemoveAll;
+  useEffect(() => {
+    if (successRMAll) {
+      Toast.successToast({ title: 'Xóa thành công' });
+      setOpenRemoveAll(false);
+    } else if (errorRMAll) {
+      Toast.errorToast({ title: 'Xóa không thành công' });
+      setOpenRemoveAll(false);
+    }
+  }, [errorRMAll, successRMAll]);
+  const handleRemoveAll = () => {
+    mutationRemoveAll.mutate({ arrayProduct, userAccess });
+  };
+  //4end-------------Xử lý khi bấm nút tất cả xóa sản phẩm :
+
   //4-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới------------
   //onChangeInput
   const handleChangeProduct = (e) => {
-    console.log('e', e.target.name, e.target.value);
     setStateProduct({
       ...stateProduct,
       [e.target.name]: e.target.value
@@ -339,23 +363,34 @@ function AdminProduct() {
 
   return (
     <Box sx={{ pt: 5 }}>
-      {loadingRemove && <LoadingComponent time={4000}></LoadingComponent>}
+      {loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
       <Typography py={2} sx={{ fontSize: '1.5rem', fontWeight: 700 }}>
         Quản Lý Sản Phẩm
       </Typography>
       <Button sx={{ width: '150px', height: '150px', border: '5px solid #34495e' }} onClick={() => setOpenModal(true)}>
         <AddIcon sx={{ fontSize: '10rem' }}></AddIcon>
       </Button>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Button
+          variant="contained"
+          startIcon={<DeleteForeverIcon></DeleteForeverIcon>}
+          onClick={() => setOpenRemoveAll(true)}
+          disabled={arrayProduct.length < 2}
+        >
+          Xóa Tất Cả
+        </Button>
+      </Box>
       {loadingUpdate ? (
         <LoadingComponent time={2300}></LoadingComponent>
       ) : (
         <TableComponent
           products={productData?.data}
           columns={columns}
-          dataProduct={dataTable}
+          rows={dataTable}
           LoadingProduct={LoadingProduct}
           getRowId={(dataTable) => dataTable._id}
           onRowClick={handleClickTable}
+          onRowSelectionModelChange={handleRowSelectionChange}
         ></TableComponent>
       )}
 
@@ -733,6 +768,45 @@ function AdminProduct() {
               Không
             </Button>
             <Button variant="contained" sx={{ backgroundColor: '#ff3838' }} onClick={handleRemoveProduct}>
+              Xóa
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* modal xóa tất cả */}
+      <Modal
+        open={openRemoveAll}
+        // onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModal}>
+          <Typography
+            sx={{
+              fontSize: '1.6rem',
+              fontWeight: 600
+            }}
+          >
+            Bạn có chắc chắn xóa tất cả sản phẩm này không ?
+          </Typography>
+          <Box
+            sx={{
+              mt: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              '& .MuiButtonBase-root': {
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                ml: 1
+              }
+            }}
+          >
+            <Button variant="outlined" onClick={() => setOpenRemoveAll(false)}>
+              Không
+            </Button>
+            <Button variant="contained" sx={{ backgroundColor: '#ff3838' }} onClick={handleRemoveAll}>
               Xóa
             </Button>
           </Box>

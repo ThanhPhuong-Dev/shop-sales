@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-function InputComponent({ label, id, name, value, type, handleChange, width }) {
+function InputComponent({ label, id, name, value, type, handleChange, width, disabled }) {
   return (
     <Box
       sx={{
@@ -22,6 +22,7 @@ function InputComponent({ label, id, name, value, type, handleChange, width }) {
         name={name}
         style={{ maxWidth: `${width}`, minWidth: `${width}`, outline: 'none', padding: '12px' }}
         onChange={handleChange}
+        disabled={disabled}
       ></input>
     </Box>
   );
