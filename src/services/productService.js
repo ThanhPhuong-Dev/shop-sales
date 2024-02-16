@@ -40,7 +40,15 @@ export const removeProductAll = async (data, access_token) => {
   });
   return res.data;
 };
+
 export const getProductDetails = async (id) => {
   const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/details/${id}`);
+  return res.data;
+};
+
+export const searchProduct = async (filter) => {
+  const res = await axios.get(
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/searchProduct?filter=name&filter=${filter}`
+  );
   return res.data;
 };

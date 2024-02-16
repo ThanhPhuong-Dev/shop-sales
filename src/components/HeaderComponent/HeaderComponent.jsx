@@ -10,14 +10,44 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import AvatarComponent from '../AvatarComponent/AvatarComponent';
-
+import TippyComponent from '../TippyComponent/TippyComponent';
+import { useEffect, useState } from 'react';
+import * as ProductService from '~/services/productService';
+import UseDebounce from '~/utils/Debounce';
 function HeaderComponent() {
+  const [searchValue, setSearchValue] = useState('');
+  const [resultSearch, setResultSearch] = useState([]);
+  const [showResult, setShowResult] = useState(true);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const hadnleClickUser = () => {
     navigate('/login');
   };
+  const searchDebounce = UseDebounce(searchValue, 500);
+  useEffect(() => {
+    if (!searchDebounce.trim()) {
+      return setResultSearch([]);
+    }
+    const fetchSearchProduct = async () => {
+      const res = await ProductService.searchProduct(searchDebounce);
+      setResultSearch(res);
+    };
+    fetchSearchProduct();
+  }, [searchDebounce]);
 
+  const handleSearch = (e) => {
+    const searchValue = e.target.value;
+    if (!searchValue.startsWith(' ')) {
+      setSearchValue(searchValue);
+    }
+  };
+  const handleFocus = () => {
+    setShowResult(true);
+  };
+
+  const onHide = () => {
+    setShowResult(false);
+  };
   return (
     <Box
       sx={{
@@ -75,58 +105,68 @@ function HeaderComponent() {
         </Box>
 
         {/* search */}
-        <Box
-          sx={{
-            display: 'flex',
-            flex: 1,
-            maxWidth: '50%',
-
-            '& .MuiTextField-root': {
-              bgcolor: 'white',
-              outline: 'none',
-              borderRadius: '5px 0 0 5px',
-              fontSize: '2rem',
-              '&:focus': {
-                outline: 'none',
-                border: 'none',
-                color: 'red'
-              },
-
-              '& .MuiInputLabel-root': {
-                color: '#95a5a6',
-                fontSize: '1.4rem'
-              },
-              '& .MuiInputBase-root': {
-                fontSize: '1.4rem'
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                color: 'blue',
-                border: '1px'
-              }
-            }
-          }}
-        >
-          <TextField size="small" fullWidth id="outlined-search" label="Search Product" type="search" />
-          <Button
-            variant="contained"
-            disableElevation
+        <TippyComponent resultSearch={resultSearch} handleHide={onHide} showResult={showResult}>
+          <Box
             sx={{
-              bgcolor: '#f57224',
-              color: 'white',
-              borderRadius: '0 5px 5px 0',
+              display: 'flex',
+              flex: 1,
+              maxWidth: '50%',
 
-              '&:hover': {
-                background: '#cca77f'
-              },
-              '& .MuiSvgIcon-root': {
-                fontSize: '2.5rem'
+              '& .MuiTextField-root': {
+                bgcolor: 'white',
+                outline: 'none',
+                borderRadius: '5px 0 0 5px',
+                fontSize: '2rem',
+                '&:focus': {
+                  outline: 'none',
+                  border: 'none',
+                  color: 'red'
+                },
+
+                '& .MuiInputLabel-root': {
+                  color: '#95a5a6',
+                  fontSize: '1.4rem'
+                },
+                '& .MuiInputBase-root': {
+                  fontSize: '1.4rem'
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  color: 'blue',
+                  border: '1px'
+                }
               }
             }}
           >
-            <SearchIcon />
-          </Button>
-        </Box>
+            <TextField
+              value={searchValue}
+              size="small"
+              fullWidth
+              id="outlined-search"
+              label="Search Product"
+              type="search"
+              onChange={handleSearch}
+              onFocus={handleFocus}
+            />
+            <Button
+              variant="contained"
+              disableElevation
+              sx={{
+                bgcolor: '#f57224',
+                color: 'white',
+                borderRadius: '0 5px 5px 0',
 
+                '&:hover': {
+                  background: '#cca77f'
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: '2.5rem'
+                }
+              }}
+            >
+              <SearchIcon />
+            </Button>
+          </Box>
+        </TippyComponent>
         {/* Action */}
         <Box
           sx={{
