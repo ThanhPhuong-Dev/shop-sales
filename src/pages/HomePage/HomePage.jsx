@@ -17,8 +17,8 @@ function HomePages() {
     return res;
   };
 
-  
-  const { data: ProductData , isLoading } = useQuery(['product'], fetchDataProductAll, { retry: 3, retryDelay: 1000 });
+
+  const { data: ProductData, isLoading } = useQuery(['product'], fetchDataProductAll, { retry: 3, retryDelay: 1000 });
   return (
     <>
       {isLoading ? (

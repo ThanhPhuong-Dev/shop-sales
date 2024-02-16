@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import { keyframes } from '@emotion/react';
 import formatNumberWithK from '~/utils/formatNumberWithK';
-
+import formatNumber from '~/utils/formatNumber';
 const fadeIn = keyframes`
   from {
     transform: translateY(0);
@@ -77,10 +77,12 @@ function CardComponent({ product }) {
           {product?.name}
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ fontWeight: 700, color: 'red', pt: 1 }}>
-          {product?.price}đ
-          <Typography sx={{ ml: 1, fontSize: '1.2rem' }} variant="span">
-            {product?.discount}%
-          </Typography>
+          {formatNumber(product?.price)}đ
+          {product?.discount && (
+            <Typography sx={{ ml: 1, fontSize: '1.2rem' }} variant="span">
+              {product?.discount}%
+            </Typography>
+          )}
         </Typography>
 
         <Box
