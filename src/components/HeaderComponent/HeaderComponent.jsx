@@ -47,6 +47,7 @@ function HeaderComponent() {
 
   const onHide = () => {
     setShowResult(false);
+    setSearchValue('');
   };
   return (
     <Box

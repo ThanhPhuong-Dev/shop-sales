@@ -21,11 +21,25 @@ function SearchResult({ product, handleHide }) {
         }
       }}
     >
-      <Box sx={{ width: '50px', height: '50px', overflow: 'hidden', mr: 2 }}>
+      <Box sx={{ width: '50px', height: '50px', mr: 2 }}>
         <img src={product?.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }}></img>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Typography sx={{ fontSize: '1.6rem', fontWeight: 700, lineHeight: 1.4 }}>{product?.name}</Typography>
+        <Typography
+          sx={{
+            fontSize: '1.6rem',
+            fontWeight: 700,
+            lineHeight: 1.4,
+            whiteSpace: 'pre-line',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 1
+          }}
+        >
+          {product?.name}
+        </Typography>
         <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, lineHeight: 1.4, color: 'red' }}>
           {formatNumber(product?.price)}đ
         </Typography>
