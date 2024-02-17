@@ -1,4 +1,15 @@
-import { Box, Button, IconButton, Modal, Rating, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Rating,
+  Select,
+  Typography
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TableComponent from '~/components/TableComponent/TableComponent';
 import { useEffect, useState } from 'react';
@@ -23,6 +34,10 @@ function AdminProduct() {
   const [errorProduct, setErrorProduct] = useState('');
   const [selectedRows, setSelectedRows] = useState('');
   const [selectedName, setSelectedName] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [otherType, setOtherType] = useState('');
+  const [otherUpdateType, setOtherUpdateType] = useState('');
+
   const [stateProduct, setStateProduct] = useState({
     name: '',
     type: '',
@@ -47,7 +62,6 @@ function AdminProduct() {
     image: ''
   });
   const userAccess = localStorage.getItem('access_token');
-  console.log('arrayProduct', arrayProduct);
   const styleModal = {
     position: 'absolute',
     top: '50%',
@@ -65,9 +79,16 @@ function AdminProduct() {
     const res = await ProductServices.getAllProduct();
     return res;
   };
+  const fetchTypeProduct = async () => {
+    const res = await ProductServices.typeProduct();
+    return res;
+  };
 
   const ProductQuery = useQuery(['products'], fetchGetDataProduct);
+  const TypeQuery = useQuery(['type-product'], fetchTypeProduct);
+  const { data: dataTypeProduct } = TypeQuery;
   const { isLoading: LoadingProduct, data: productData } = ProductQuery;
+  console.log('dataTypeProduct', dataTypeProduct);
   const dataTable =
     productData?.data.length &&
     productData?.data?.map((product) => {
@@ -215,14 +236,26 @@ function AdminProduct() {
 
   const handleSubmitUpdateForm = (e) => {
     e.preventDefault();
-    mutationUpdate.mutate(
-      { ...stateUpdateProduct },
-      {
-        onSettled: () => {
-          ProductQuery.refetch();
+    if (otherUpdateType) {
+      mutationUpdate.mutate(
+        { ...stateUpdateProduct, type: otherUpdateType },
+        {
+          onSettled: () => {
+            ProductQuery.refetch();
+          }
         }
-      }
-    );
+      );
+      setOtherUpdateType('');
+    } else {
+      mutationUpdate.mutate(
+        { ...stateUpdateProduct },
+        {
+          onSettled: () => {
+            ProductQuery.refetch();
+          }
+        }
+      );
+    }
   };
   //2end---------Xử Lý khi bấm vào chỉnh sửa sản phẩm gồm :hiện thanh drawer và get lại productDetail và submit
 
@@ -312,6 +345,7 @@ function AdminProduct() {
 
   //MuTation
   const mutation = useMutationHook((data) => {
+    console.log('data', data);
     return ProductServices.createProduct(data);
   });
 
@@ -351,16 +385,69 @@ function AdminProduct() {
       sold: '',
       image: ''
     });
+    setOtherType('');
     setOpenModal(false);
   };
 
   //submit
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    mutation.mutate({ ...stateProduct });
+    if (otherType) {
+      mutation.mutate(
+        { ...stateProduct, type: otherType },
+        {
+          onSettled: () => {
+            ProductQuery.refetch();
+          }
+        }
+      );
+      setOtherType('');
+    } else {
+      mutation.mutate(
+        { ...stateProduct },
+        {
+          onSettled: () => {
+            ProductQuery.refetch();
+          }
+        }
+      );
+    }
   };
   //4end-------------Khi Tạo Bảng về nhập dữ liệu vào submit để tạo sản phẩm mới-------
 
+  const handleSelectedType = (e) => {
+    const typeName = e.target.value;
+    setSelectedType(typeName);
+    if (typeName === 'other-type') {
+      setOtherType(''); // Reset giá trị otherType khi chọn other-type
+    } else {
+      setStateProduct({
+        ...stateProduct,
+        type: typeName
+      });
+    }
+  };
+  const handleAddType = (e) => {
+    setOtherType(e.target.value);
+  };
+
+  const handleSelectedUpdateType = (e) => {
+    const typeName = e.target.value;
+    setSelectedType(typeName);
+    if (typeName === 'other-type') {
+      setOtherUpdateType('');
+    } else {
+      setStateUpdateProduct({
+        ...stateUpdateProduct,
+        type: typeName
+      });
+    }
+  };
+
+  const handleAddUpdateType = (e) => {
+    setOtherUpdateType(e.target.value);
+  };
+  console.log('stateUpdateProduct', stateUpdateProduct);
   return (
     <Box sx={{ pt: 5 }}>
       {loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
@@ -432,14 +519,36 @@ function AdminProduct() {
               handleChange={handleChangeProduct}
               width="350px"
             ></InputComponent>
-            <InputComponent
+            {/* <InputComponent
               label="Type"
               id="type"
               name="type"
               value={stateProduct.type}
               handleChange={handleChangeProduct}
               width="350px"
-            ></InputComponent>
+            ></InputComponent> */}
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography sx={{ fontSize: '1.4rem', fontWeight: 600 }}>Type</Typography>
+              <FormControl sx={{ width: '350px' }}>
+                <Select id="type" name="type" value={selectedType} onChange={handleSelectedType} defaultValue="Tủ">
+                  {dataTypeProduct?.data.map((type, index) => (
+                    <MenuItem key={index} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                  <MenuItem value="other-type">Thêm Type</MenuItem>
+                </Select>
+                {selectedType === 'other-type' && (
+                  <input
+                    style={{ width: '350px', height: '43px', marginTop: '10px' }}
+                    value={otherType}
+                    onChange={handleAddType}
+                    name={selectedType === 'other-type' ? 'type' : ''}
+                  ></input>
+                )}
+              </FormControl>
+            </Box>
+
             <InputComponent
               label="Count In Stock"
               id="countInStock"
@@ -464,14 +573,6 @@ function AdminProduct() {
               handleChange={handleChangeProduct}
               width="350px"
             ></InputComponent>
-            {/* <InputComponent
-              label="Rating"
-              id="rating"
-              value={stateProduct.rating}
-              handleChange={handleChangeProduct}
-              width="350px"
-            ></InputComponent> */}
-
             <InputComponent
               label="Location"
               id="location"
@@ -609,14 +710,33 @@ function AdminProduct() {
               handleChange={handleChangeProductDetails}
               width="350px"
             ></InputComponent>
-            <InputComponent
-              label="Type"
-              id="type"
-              name="type"
-              value={stateUpdateProduct.type}
-              handleChange={handleChangeProductDetails}
-              width="350px"
-            ></InputComponent>
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography sx={{ fontSize: '1.4rem', fontWeight: 600 }}>Type</Typography>
+              <FormControl sx={{ width: '350px' }}>
+                <Select
+                  id="type"
+                  name="type"
+                  value={stateUpdateProduct.type}
+                  onChange={handleSelectedUpdateType}
+                  defaultValue={stateUpdateProduct?.type}
+                >
+                  {dataTypeProduct?.data.map((type, index) => (
+                    <MenuItem key={index} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                  <MenuItem value="other-type">Thêm Type</MenuItem>
+                </Select>
+                {selectedType === 'other-type' && (
+                  <input
+                    style={{ width: '350px', height: '43px', marginTop: '10px' }}
+                    value={otherUpdateType}
+                    onChange={handleAddUpdateType}
+                    name={selectedType === 'other-type' ? 'type' : ''}
+                  ></input>
+                )}
+              </FormControl>
+            </Box>
             <InputComponent
               label="Count In Stock"
               id="countInStock"

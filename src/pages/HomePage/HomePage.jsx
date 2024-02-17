@@ -7,11 +7,17 @@ import * as ProductService from '~/services/productService';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-const arr = ['11.1 Sale Sinh Nhật', 'Miễn Phí Gói Quà', 'điện gia dụng', 'xe cộ', 'mẹ & bé', 'nhà cửa', 'thể thao'];
 
 function HomePages() {
   const [limit, setLimit] = useState(12);
-
+  const [typeProduct, setTypeProduct] = useState([]);
+  useEffect(() => {
+    const fetchTypeProduct = async () => {
+      const res = await ProductService.typeProduct();
+      setTypeProduct(res.data);
+    };
+    fetchTypeProduct();
+  }, []);
   const fetchDataProductAll = async (context) => {
     const limitt = context?.queryKey && context?.queryKey[1];
     const res = await ProductService.getAllProduct(limitt);
@@ -20,7 +26,7 @@ function HomePages() {
 
   const productAll = useQuery(['product', limit], fetchDataProductAll, { retry: 3, retryDelay: 1000 });
   const { data: ProductData, isLoading } = productAll;
-  console.log('ProductData', ProductData);
+
   return (
     <>
       {isLoading ? (
@@ -38,7 +44,7 @@ function HomePages() {
           }
         >
           <Box sx={{ display: 'flex', padding: '0 0 10px 0', gap: 3, borderBottom: '2px solid #ccc' }}>
-            {arr.map((item, index) => (
+            {typeProduct.map((item, index) => (
               <Chip
                 key={index}
                 label={item}

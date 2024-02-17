@@ -3,12 +3,7 @@ export const axiosJWT = axios.create({
   withCredentials: true
 });
 export const getAllProduct = async (limit) => {
-  let res;
-  if (limit) {
-    res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/getAllProduct?limit=${limit}`);
-  } else {
-    res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/getAllProduct`);
-  }
+  const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/getAllProduct?limit=${limit}`);
   return res.data;
 };
 
@@ -55,5 +50,10 @@ export const searchProduct = async (filter) => {
   const res = await axios.get(
     `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/searchProduct?filter=name&filter=${filter}`
   );
+  return res.data;
+};
+
+export const typeProduct = async () => {
+  const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/type-all-product`);
   return res.data;
 };
