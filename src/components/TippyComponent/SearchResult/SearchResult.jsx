@@ -1,8 +1,15 @@
 import { Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import formatNumber from '~/utils/formatNumber';
-function SearchResult({ product }) {
+function SearchResult({ product, handleHide }) {
+  const navigate = useNavigate();
+  const handleClickSearch = () => {
+    navigate(`/product-details/${product._id}`);
+    handleHide();
+  };
   return (
     <Box
+      onClick={handleClickSearch}
       sx={{
         background: 'white',
         p: 1,

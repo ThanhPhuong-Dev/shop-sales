@@ -3,9 +3,17 @@ import HeaderComponent from '~/components/HeaderComponent/HeaderComponent';
 
 function DefaultLayout({ children }) {
   return (
-    <div>
+    <div style={{ backgroundColor: '#f5f5f5' }}>
       <HeaderComponent></HeaderComponent>
-      <Container size="lg" sx={{ marginTop: '80px', paddingTop: '8px', background: '#ffffff', px: 0 }}>
+      <Container
+        size="lg"
+        sx={{
+          marginTop: '70px',
+          paddingTop: '8px',
+          px: 0
+          //  background: '#ffffff'
+        }}
+      >
         {children}
       </Container>
     </div>

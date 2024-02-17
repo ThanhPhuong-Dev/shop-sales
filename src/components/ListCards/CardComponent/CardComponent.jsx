@@ -7,6 +7,7 @@ import StarIcon from '@mui/icons-material/Star';
 import { keyframes } from '@emotion/react';
 import formatNumberWithK from '~/utils/formatNumberWithK';
 import formatNumber from '~/utils/formatNumber';
+import { useNavigate } from 'react-router-dom';
 const fadeIn = keyframes`
   from {
     transform: translateY(0);
@@ -17,9 +18,15 @@ const fadeIn = keyframes`
 `;
 
 function CardComponent({ product }) {
+  const navigate = useNavigate();
   const stars = Array.from({ length: product?.rating }, (_, index) => <StarIcon key={index} />);
+
+  const handleClickCard = () => {
+    navigate(`/product-details/${product._id}`);
+  };
   return (
     <Card
+      onClick={handleClickCard}
       sx={{
         maxWidth: 200,
         height: '282px',
