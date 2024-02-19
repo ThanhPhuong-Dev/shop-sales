@@ -25,6 +25,7 @@ import DrawerComponent from '~/components/DrawerComponent/DrawerComponent';
 import * as Toast from '~/utils/reactToasts';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import dataURItoBlob from '~/utils/url';
 function AdminProduct() {
   const [openModal, setOpenModal] = useState(false);
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -88,7 +89,6 @@ function AdminProduct() {
   const TypeQuery = useQuery(['type-product'], fetchTypeProduct);
   const { data: dataTypeProduct } = TypeQuery;
   const { isLoading: LoadingProduct, data: productData } = ProductQuery;
-  console.log('dataTypeProduct', dataTypeProduct);
   const dataTable =
     productData?.data.length &&
     productData?.data?.map((product) => {
@@ -177,13 +177,14 @@ function AdminProduct() {
       reader.onload = (event) => {
         setStateUpdateProduct({
           ...stateUpdateProduct,
-          image: event.target.result
+          image: URL.createObjectURL(event.target.result)
         });
       };
       reader.readAsDataURL(file);
     }
   };
-
+  console.log('stateUpdateProduct', stateUpdateProduct);
+  console.log('stateUProduct', stateProduct);
   const fetchDataProductDetail = async () => {
     const res = await ProductServices.getProductDetails(selectedRows);
     if (res?.data) {
@@ -267,11 +268,7 @@ function AdminProduct() {
   });
 
   const { isLoading: loadingRemove, isSuccess: successRemove, isError: errorRemove } = mutationRemove;
-  // const fetchRemoveProduct = async () => {
-  //   const res = await ProductServices.removeProduct(selectedRows, userAccess);
-  //   console.log('res', res);
-  //   return res;
-  // };
+
   useEffect(() => {
     if (successRemove) {
       Toast.successToast({ title: `Xóa sản phẩm ${selectedName} thành công` });
@@ -329,23 +326,34 @@ function AdminProduct() {
   };
 
   //upload image
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (event) => {
+  //       setStateProduct({
+  //         ...stateProduct,
+  //         image: URL.createObjectURL(event.target.result)
+  //       });
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    console.log('file', file);
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setStateProduct({
-          ...stateProduct,
-          image: event.target.result
-        });
-      };
-      reader.readAsDataURL(file);
+      const imagePath = URL.createObjectURL(file);
+      console.log('imagePath', imagePath);
+      // setStateProduct({
+      //   ...stateProduct,
+      //   image: URL.createObjectURL(imagePath)
+      // });
     }
   };
 
   //MuTation
   const mutation = useMutationHook((data) => {
-    console.log('data', data);
     return ProductServices.createProduct(data);
   });
 
@@ -366,8 +374,10 @@ function AdminProduct() {
         sold: '',
         image: ''
       });
+      Toast.successToast({ title: 'Tạo Sản Phẩm Mới Thành Công' });
     } else if (isError) {
       setErrorProduct(error.response.data.message);
+      Toast.errorToast({ title: 'Lỗi Sản Phẩm' });
     }
   }, [isSuccess, isError]);
 
@@ -419,7 +429,7 @@ function AdminProduct() {
     const typeName = e.target.value;
     setSelectedType(typeName);
     if (typeName === 'other-type') {
-      setOtherType(''); // Reset giá trị otherType khi chọn other-type
+      setOtherType('');
     } else {
       setStateProduct({
         ...stateProduct,
@@ -447,7 +457,7 @@ function AdminProduct() {
   const handleAddUpdateType = (e) => {
     setOtherUpdateType(e.target.value);
   };
-  console.log('stateUpdateProduct', stateUpdateProduct);
+  console.log('SelectedType', selectedType);
   return (
     <Box sx={{ pt: 5 }}>
       {loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
@@ -530,7 +540,7 @@ function AdminProduct() {
             <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography sx={{ fontSize: '1.4rem', fontWeight: 600 }}>Type</Typography>
               <FormControl sx={{ width: '350px' }}>
-                <Select id="type" name="type" value={selectedType} onChange={handleSelectedType} defaultValue="Tủ">
+                <Select id="type" name="type" value={selectedType} onChange={handleSelectedType}>
                   {dataTypeProduct?.data.map((type, index) => (
                     <MenuItem key={index} value={type}>
                       {type}
@@ -661,7 +671,7 @@ function AdminProduct() {
                   stateProduct.price &&
                   stateProduct.rating &&
                   stateProduct.sold &&
-                  stateProduct.type &&
+                  (stateProduct.type || otherType) &&
                   stateProduct.image
                     ? false
                     : true

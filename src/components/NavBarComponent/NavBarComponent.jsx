@@ -3,7 +3,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { useNavigate } from 'react-router-dom';
 function NavBarComponent({ label, datas }) {
+  const navigate = useNavigate();
+  const handleClickType = (e) => {
+    const typeName = e.target.innerText;
+    console.log('e', e.target.innerText);
+    navigate(`product/${typeName}`, { replace: true });
+  };
   const handleClick = () => {
     console.log('clickme');
   };
@@ -13,7 +20,10 @@ function NavBarComponent({ label, datas }) {
         width: '200px',
         backgroundColor: '#ccc',
         padding: '12px 8px',
-        borderRadius: '5px'
+        borderRadius: '5px',
+        overflowY: 'auto',
+        position: 'fixed',
+        height: 'calc( 100vh - 80px )'
       }}
     >
       <h2
@@ -26,39 +36,39 @@ function NavBarComponent({ label, datas }) {
       </h2>
 
       {/* category */}
-      {datas.category &&
-        datas.category.map((data, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '7px 8px',
-              cursor: 'pointer',
-              borderRadius: '10px',
-              '&:hover': {
-                background: '#27272a1f'
-              },
+      {datas?.map((data, index) => (
+        <Box
+          onClick={handleClickType}
+          key={index}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '7px 8px',
+            cursor: 'pointer',
+            borderRadius: '10px',
+            '&:hover': {
+              background: '#27272a1f'
+            },
 
-              '& .MuiTypography-root': {
-                fontSize: '1.4rem'
-              }
+            '& .MuiTypography-root': {
+              fontSize: '1.4rem'
+            }
+          }}
+        >
+          <Box
+            sx={{
+              width: '32px',
+              height: '32px',
+              overflow: 'hidden',
+              mr: '15px'
             }}
           >
-            <Box
-              sx={{
-                width: '32px',
-                height: '32px',
-                overflow: 'hidden',
-                mr: '15px'
-              }}
-            >
-              <img src={data.img} style={{ width: '100%', height: '100%' }}></img>
-            </Box>
-            <Typography>{data.title}</Typography>
+            <img src={data.img} style={{ width: '100%', height: '100%' }}></img>
           </Box>
-        ))}
-      <h2
+          <Typography>{data}</Typography>
+        </Box>
+      ))}
+      {/* <h2
         style={{
           margin: '10px 0 8px 0',
           paddingLeft: '16px'
@@ -80,7 +90,7 @@ function NavBarComponent({ label, datas }) {
         <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
         <FormControlLabel required control={<Checkbox />} label="Required" />
         <FormControlLabel disabled control={<Checkbox />} label="Disabled" />
-      </FormGroup>
+      </FormGroup> */}
 
       <h2
         style={{
@@ -194,7 +204,7 @@ function NavBarComponent({ label, datas }) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems:'flex-start',
+          alignItems: 'flex-start',
           gap: 1,
           '& .MuiChip-label': {
             fontSize: '1.2rem'

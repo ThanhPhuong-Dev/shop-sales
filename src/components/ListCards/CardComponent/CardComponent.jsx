@@ -20,7 +20,6 @@ const fadeIn = keyframes`
 function CardComponent({ product }) {
   const navigate = useNavigate();
   const stars = Array.from({ length: product?.rating }, (_, index) => <StarIcon key={index} />);
-
   const handleClickCard = () => {
     navigate(`/product-details/${product._id}`);
   };
@@ -29,6 +28,7 @@ function CardComponent({ product }) {
       onClick={handleClickCard}
       sx={{
         maxWidth: 200,
+        minWidth: 170,
         height: '282px',
         cursor: 'pointer',
         boxShadow: '0px 2px 9px #ccc',
@@ -53,7 +53,6 @@ function CardComponent({ product }) {
       >
         <img
           src="https://down-vn.img.susercontent.com/file/76c36bd87ff2eb5887d9ad3516111869"
-          // src={product?.image}
           style={{
             width: '100%',
             height: '100%'
@@ -84,7 +83,7 @@ function CardComponent({ product }) {
           {product?.name}
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ fontWeight: 700, color: 'red', pt: 1 }}>
-          {formatNumber(product?.price)}đ
+          {product && formatNumber(product?.price)}đ
           {product?.discount && (
             <Typography sx={{ ml: 1, fontSize: '1.2rem' }} variant="span">
               {product?.discount}%
