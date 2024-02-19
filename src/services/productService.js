@@ -57,3 +57,20 @@ export const typeProduct = async () => {
   const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/type-all-product`);
   return res.data;
 };
+
+export const pageTypeProduct = async (type, limit, page) => {
+  const res = await axios.get(
+    `${
+      import.meta.env.VITE_REACT_APP_API_URL_BACKEND
+    }/product/page-type-product?filter=type&filter=${type}&limit=${limit}&page=${page}`
+  );
+  return res.data;
+};
+// export const pageTypeProduct = async (type) => {
+//   if (type) {
+//     const res = await axios.get(
+//       `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/getAllProduct?filter=type&filter=${type}`
+//     );
+//     return res.data;
+//   }
+// };

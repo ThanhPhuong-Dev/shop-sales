@@ -11,7 +11,6 @@ function TippyComponent({ children, resultSearch, handleHide, showResult }) {
       onClickOutside={handleHide}
       render={(attrs) => (
         <div className="box" tabIndex="-1" {...attrs} style={{ width: '512px' }}>
-          {/* <TippySearch resultSearch={resultSearch?.data} showResul={showResult}></TippySearch> */}
           <Box
             sx={{
               backgroundColor: 'white',
@@ -20,7 +19,8 @@ function TippyComponent({ children, resultSearch, handleHide, showResult }) {
               minHeight: '100px',
               py: 1,
               borderRadius: '8px',
-              boxShadow: '1px 1px 1px #ccc'
+              boxShadow: '1px 1px 1px #ccc',
+              overflowY: 'auto'
             }}
           >
             {resultSearch?.data?.map((product) => (

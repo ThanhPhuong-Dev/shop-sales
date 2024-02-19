@@ -41,7 +41,7 @@ function SearchResult({ product, handleHide }) {
           {product?.name}
         </Typography>
         <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, lineHeight: 1.4, color: 'red' }}>
-          {formatNumber(product?.price)}đ
+          {product && formatNumber(product?.price)}đ
         </Typography>
       </Box>
     </Box>

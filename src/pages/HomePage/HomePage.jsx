@@ -7,10 +7,12 @@ import * as ProductService from '~/services/productService';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function HomePages() {
   const [limit, setLimit] = useState(12);
   const [typeProduct, setTypeProduct] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTypeProduct = async () => {
       const res = await ProductService.typeProduct();
@@ -27,6 +29,16 @@ function HomePages() {
   const productAll = useQuery(['product', limit], fetchDataProductAll, { retry: 3, retryDelay: 1000 });
   const { data: ProductData, isLoading } = productAll;
 
+  const handleTypeChip = (e) => {
+    const typeName = e.target.innerText;
+    navigate(
+      `/product/${typeName}`
+        .normalize('NFD')
+        ?.replace(/[\u0300-\u036f]/g, '')
+        ?.replace(/%20/g, '_'),
+      { state: typeName }
+    );
+  };
   return (
     <>
       {isLoading ? (
@@ -43,15 +55,40 @@ function HomePages() {
             }
           }
         >
-          <Box sx={{ display: 'flex', padding: '0 0 10px 0', gap: 3, borderBottom: '2px solid #ccc' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              padding: '0 0 10px 0',
+              gap: 3,
+              borderBottom: '2px solid #ccc',
+              overflowX: 'auto',
+
+              '-webkit-overflow-scrolling': 'touch', // Cho phép cuộn mượt mà trên các trình duyệt di động
+              msOverflowStyle: 'none',
+              '::-webkit-scrollbar': {
+                borderRadius: 0,
+                height: '8px'
+              },
+              '::-webkit-scrollbar-track': {
+                borderRadius: 0,
+                backgroundColor: ' rgba(0, 0, 0, 0)'
+              },
+              '::-webkit-scrollbar-thumb': {
+                borderRadius: '4px',
+                backgroundColor: 'rgba(22, 24, 35, .06)'
+              },
+              '::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#95a5a6'
+              }
+              // msOverflowStyle: 'none'
+            }}
+          >
             {typeProduct.map((item, index) => (
               <Chip
                 key={index}
                 label={item}
                 sx={{ fontSize: '1.4rem', color: '#27272a', cursor: 'pointer', background: '#ccc' }}
-                onClick={() => {
-                  console.log(item);
-                }}
+                onClick={handleTypeChip}
               ></Chip>
             ))}
           </Box>

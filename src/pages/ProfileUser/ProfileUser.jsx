@@ -45,36 +45,46 @@ function ProfileUser() {
   const handleGenderChange = (e) => {
     setGender(e.target.value);
   };
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (event) => {
+  //       const img = new Image();
+  //       img.onload = () => {
+  //         const canvas = document.createElement('canvas');
+  //         const ctx = canvas.getContext('2d');
+
+  //         // Giảm độ phân giải của ảnh
+  //         const targetWidth = 100;
+  //         const targetHeight = (img.height / img.width) * targetWidth;
+
+  //         // Giảm kích thước hình ảnh
+  //         canvas.width = targetWidth;
+  //         canvas.height = targetHeight;
+
+  //         // Vẽ lại hình ảnh trên canvas
+  //         ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+  //         // Nén ảnh mạnh hơn
+  //         const compressedImageData = canvas.toDataURL('image/jpeg', 0.5); // Đặt chất lượng thấp hơn (0.1 đến 1)
+  //         const compactAvatarData = compressedImageData.replace(/\s/g, '');
+  //         // Lưu dữ liệu vào trạng thái
+  //         setAvatar(compactAvatarData);
+  //       };
+  //       img.src = event.target.result;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log('file', file.name);
+
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-
-          // Giảm độ phân giải của ảnh
-          const targetWidth = 100;
-          const targetHeight = (img.height / img.width) * targetWidth;
-
-          // Giảm kích thước hình ảnh
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-
-          // Vẽ lại hình ảnh trên canvas
-          ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-          // Nén ảnh mạnh hơn
-          const compressedImageData = canvas.toDataURL('image/jpeg', 0.5); // Đặt chất lượng thấp hơn (0.1 đến 1)
-          const compactAvatarData = compressedImageData.replace(/\s/g, '');
-          // Lưu dữ liệu vào trạng thái
-          setAvatar(compactAvatarData);
-        };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+      const imagePath = URL.createObjectURL(file);
+      setAvatar(file.name);
+      console.log('imagePath', imagePath);
     }
   };
   const mutation = useMutationHook((data) => {
