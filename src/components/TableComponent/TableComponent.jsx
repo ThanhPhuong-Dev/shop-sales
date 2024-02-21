@@ -27,7 +27,7 @@ const CustomGridToolbar = () => {
 function TableComponent({ columns, rows = [], getRowId, onRowClick, onRowSelectionModelChange }) {
   return (
     <>
-      {<LoadingComponent time={2300}></LoadingComponent>}
+      {/* {<LoadingComponent time={2300}></LoadingComponent>} */}
       <Box sx={{ height: 450, width: '100%', mt: 4 }}>
         <DataGrid
           slots={{ toolbar: CustomGridToolbar }}

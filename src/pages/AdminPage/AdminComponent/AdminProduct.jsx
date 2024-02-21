@@ -25,7 +25,7 @@ import DrawerComponent from '~/components/DrawerComponent/DrawerComponent';
 import * as Toast from '~/utils/reactToasts';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import dataURItoBlob from '~/utils/url';
+
 function AdminProduct() {
   const [openModal, setOpenModal] = useState(false);
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
@@ -36,6 +36,8 @@ function AdminProduct() {
   const [selectedRows, setSelectedRows] = useState('');
   const [selectedName, setSelectedName] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  const [otherImage, setOtherImage] = useState('');
+  const [imageForm, setImageForm] = useState('');
   const [otherType, setOtherType] = useState('');
   const [otherUpdateType, setOtherUpdateType] = useState('');
 
@@ -94,7 +96,14 @@ function AdminProduct() {
     productData?.data?.map((product) => {
       return { ...product, key: product._id };
     });
-
+  useEffect(() => {
+    if (!ProductQuery.data && !ProductQuery.isLoading) {
+      fetchGetDataProduct();
+    }
+    if (!dataTypeProduct && !TypeQuery.isLoading) {
+      fetchTypeProduct();
+    }
+  }, [ProductQuery, TypeQuery]);
   const renderAction = () => {
     return (
       <Box
@@ -160,6 +169,7 @@ function AdminProduct() {
       image: ''
     });
     setOpenDrawer(false);
+    setImageForm('');
   };
   //onChangeInput
   const handleChangeProductDetails = (e) => {
@@ -173,18 +183,17 @@ function AdminProduct() {
   const handleImageChangeDetails = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setStateUpdateProduct({
+        ...stateUpdateProduct,
+        image: file
+      });
       const reader = new FileReader();
       reader.onload = (event) => {
-        setStateUpdateProduct({
-          ...stateUpdateProduct,
-          image: URL.createObjectURL(event.target.result)
-        });
+        setImageForm(event.target.result);
       };
       reader.readAsDataURL(file);
     }
   };
-  console.log('stateUpdateProduct', stateUpdateProduct);
-  console.log('stateUProduct', stateProduct);
   const fetchDataProductDetail = async () => {
     const res = await ProductServices.getProductDetails(selectedRows);
     if (res?.data) {
@@ -214,14 +223,13 @@ function AdminProduct() {
 
   const handleClickTable = (selectionModel) => {
     setSelectedName(selectionModel.row.name);
-
     setSelectedRows(selectionModel.id);
   };
 
   //Xử lý submit update dữ liệu vào data bằng useMutation
 
-  const mutationUpdate = useMutationHook((data) => {
-    return ProductServices.updateProduct(selectedRows, userAccess, data);
+  const mutationUpdate = useMutationHook(async (data) => {
+    return await ProductServices.updateProduct(selectedRows, userAccess, data);
   });
 
   const { isLoading: loadingUpdate, isSuccess: successUpdate, isError: errorUpdate, data } = mutationUpdate;
@@ -234,12 +242,13 @@ function AdminProduct() {
       Toast.errorToast({ title: 'Cập nhật thất bại ' });
     }
   }, [successUpdate]);
-
   const handleSubmitUpdateForm = (e) => {
     e.preventDefault();
+    const formdata = new FormData();
+    formdata.append('image', stateUpdateProduct.image);
     if (otherUpdateType) {
       mutationUpdate.mutate(
-        { ...stateUpdateProduct, type: otherUpdateType },
+        { ...stateUpdateProduct, type: otherUpdateType, formdata },
         {
           onSettled: () => {
             ProductQuery.refetch();
@@ -249,7 +258,7 @@ function AdminProduct() {
       setOtherUpdateType('');
     } else {
       mutationUpdate.mutate(
-        { ...stateUpdateProduct },
+        { ...stateUpdateProduct, formdata },
         {
           onSettled: () => {
             ProductQuery.refetch();
@@ -257,6 +266,7 @@ function AdminProduct() {
         }
       );
     }
+    setImageForm('');
   };
   //2end---------Xử Lý khi bấm vào chỉnh sửa sản phẩm gồm :hiện thanh drawer và get lại productDetail và submit
 
@@ -325,30 +335,20 @@ function AdminProduct() {
     });
   };
 
-  //upload image
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (event) => {
-  //       setStateProduct({
-  //         ...stateProduct,
-  //         image: URL.createObjectURL(event.target.result)
-  //       });
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    console.log('file', file);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
-      const imagePath = URL.createObjectURL(file);
-      console.log('imagePath', imagePath);
-      // setStateProduct({
-      //   ...stateProduct,
-      //   image: URL.createObjectURL(imagePath)
-      // });
+      // const formdata = new FormData();
+      // formdata.append('image', file);
+      setStateProduct({
+        ...stateProduct,
+        image: file
+      });
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setOtherImage(event.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -400,11 +400,13 @@ function AdminProduct() {
   };
 
   //submit
-  const handleSubmitForm = (e) => {
+  const handleSubmitFormNew = (e) => {
     e.preventDefault();
+    const formdata = new FormData();
+    formdata.append('image', stateProduct.image);
     if (otherType) {
       mutation.mutate(
-        { ...stateProduct, type: otherType },
+        { ...stateProduct, type: otherType, formdata },
         {
           onSettled: () => {
             ProductQuery.refetch();
@@ -414,7 +416,7 @@ function AdminProduct() {
       setOtherType('');
     } else {
       mutation.mutate(
-        { ...stateProduct },
+        { ...stateProduct, formdata },
         {
           onSettled: () => {
             ProductQuery.refetch();
@@ -457,7 +459,6 @@ function AdminProduct() {
   const handleAddUpdateType = (e) => {
     setOtherUpdateType(e.target.value);
   };
-  console.log('SelectedType', selectedType);
   return (
     <Box sx={{ pt: 5 }}>
       {loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
@@ -520,7 +521,7 @@ function AdminProduct() {
               <CloseIcon></CloseIcon>
             </IconButton>
           </Box>
-          <form onSubmit={handleSubmitForm}>
+          <form onSubmit={handleSubmitFormNew}>
             <InputComponent
               label="Name"
               id="name"
@@ -633,9 +634,7 @@ function AdminProduct() {
             <Box sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
               <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 6 }}>Image</Typography>
               <UploadComponent handleImageChange={handleImageChange}></UploadComponent>
-              {stateProduct?.image && (
-                <img src={stateProduct.image} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
-              )}
+              {otherImage && <img src={otherImage} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>}
             </Box>
 
             <Box
@@ -662,20 +661,20 @@ function AdminProduct() {
                 Thoát
               </Button>
               <Button
-                disabled={
-                  stateProduct.name &&
-                  stateProduct.countInStock &&
-                  stateProduct.description &&
-                  stateProduct.discount &&
-                  stateProduct.location &&
-                  stateProduct.price &&
-                  stateProduct.rating &&
-                  stateProduct.sold &&
-                  (stateProduct.type || otherType) &&
-                  stateProduct.image
-                    ? false
-                    : true
-                }
+                // disabled={
+                //   stateProduct.name &&
+                //   stateProduct.countInStock &&
+                //   stateProduct.description &&
+                //   stateProduct.discount &&
+                //   stateProduct.location &&
+                //   stateProduct.price &&
+                //   stateProduct.rating &&
+                //   stateProduct.sold &&
+                //   (stateProduct.type || otherType) &&
+                //   stateProduct.image
+                //     ? false
+                //     : true
+                // }
                 variant="contained"
                 type="submit"
                 sx={{ backgroundColor: '#34495e' }}
@@ -702,14 +701,26 @@ function AdminProduct() {
               alignItems: 'center',
               mb: 2,
               py: 1,
+              width: '400px',
               borderBottom: '1px solid #ccc',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
               '& .MuiTypography-root': {
                 fontSize: '1.6rem',
                 fontWeight: 700
               }
             }}
           >
-            <Typography>Thông Tin Sản Phẩm {selectedName}</Typography>
+            <Typography
+              sx={{
+                overflow: 'hidden' /* Ẩn nội dung bị tràn */,
+                whiteSpace: 'nowrap' /* Ngăn ngừa việc ngắt dòng */,
+                textOverflow: 'ellipsis'
+              }}
+            >
+              Thông Tin Sản Phẩm {selectedName}
+            </Typography>
           </Box>
           <form onSubmit={handleSubmitUpdateForm}>
             <InputComponent
@@ -821,8 +832,16 @@ function AdminProduct() {
             <Box sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
               <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 12 }}>Image</Typography>
               <UploadComponent handleImageChange={handleImageChangeDetails}></UploadComponent>
-              {stateUpdateProduct?.image && (
-                <img src={stateUpdateProduct.image} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
+              {imageForm ? (
+                <img src={imageForm} name="image" style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
+              ) : (
+                stateUpdateProduct?.image && (
+                  <img
+                    src={stateUpdateProduct.image}
+                    name="image"
+                    style={{ width: '33px', height: '33px', marginLeft: '10px' }}
+                  ></img>
+                )
               )}
             </Box>
 
