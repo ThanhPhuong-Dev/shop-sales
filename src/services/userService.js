@@ -52,13 +52,19 @@ export const logOutUser = async () => {
 };
 
 export const updateUser = async (id, data) => {
-  const res = await axios.put(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/update/${id}`, { ...data });
+  const res = await axios.put(
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/update/${id}`,
+    { ...data },
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+  );
   return res.data;
 };
 
 export const deleteUser = async (id, access_token) => {
-  console.log('iddddd', id);
-  console.log('access_tokenssssss', access_token);
   const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/delete/${id}`, {
     headers: {
       access_token: `Beare ${access_token}`

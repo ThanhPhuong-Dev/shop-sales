@@ -1,15 +1,18 @@
 import { Avatar, Box, Button, FormControl, Grid, Input, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import cutTheFirstLetter from '~/utils/cutTheFirstLetter';
 import InputComponent from '../../components/InputComponent/InputComponent';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '~/services/userService';
 import { useNavigate } from 'react-router-dom';
 import RadioProfile from './RadioProfile/RadioProfile';
-
+import * as Toast from '~/utils/reactToasts';
+import { updateUser } from '~/redux/Silde/userSilde';
+import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 function ProfileUser() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user?.email);
@@ -17,6 +20,7 @@ function ProfileUser() {
   const [avatar, setAvatar] = useState(user?.avatar);
   const [address, setAddress] = useState(user?.address);
   const [gender, setGender] = useState(user?.gender);
+  const [otherAvatar, setOtherAvatar] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const userId = user?.id;
   useEffect(() => {
@@ -45,67 +49,43 @@ function ProfileUser() {
   const handleGenderChange = (e) => {
     setGender(e.target.value);
   };
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (event) => {
-  //       const img = new Image();
-  //       img.onload = () => {
-  //         const canvas = document.createElement('canvas');
-  //         const ctx = canvas.getContext('2d');
-
-  //         // Giảm độ phân giải của ảnh
-  //         const targetWidth = 100;
-  //         const targetHeight = (img.height / img.width) * targetWidth;
-
-  //         // Giảm kích thước hình ảnh
-  //         canvas.width = targetWidth;
-  //         canvas.height = targetHeight;
-
-  //         // Vẽ lại hình ảnh trên canvas
-  //         ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-  //         // Nén ảnh mạnh hơn
-  //         const compressedImageData = canvas.toDataURL('image/jpeg', 0.5); // Đặt chất lượng thấp hơn (0.1 đến 1)
-  //         const compactAvatarData = compressedImageData.replace(/\s/g, '');
-  //         // Lưu dữ liệu vào trạng thái
-  //         setAvatar(compactAvatarData);
-  //       };
-  //       img.src = event.target.result;
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log('file', file.name);
-
     if (file) {
-      const imagePath = URL.createObjectURL(file);
-      setAvatar(file.name);
-      console.log('imagePath', imagePath);
+      setAvatar(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setOtherAvatar(event.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
+
   const mutation = useMutationHook((data) => {
     return UserServices.updateUser(userId, data);
   });
-  const { isSuccess, isError, error } = mutation;
+  const { isSuccess, isError, error, isLoading } = mutation;
 
   useEffect(() => {
     if (isSuccess) {
       navigate('/');
+      dispatch(updateUser({ name, email, phone, avatar: otherAvatar, address, gender }));
+      Toast.successToast({ title: 'Cập Nhật Thành Công' });
     } else if (isError) {
+      Toast.successToast({ title: 'Cập Nhật Không Thành Công ' });
       setErrorMessage(error.response.data.message);
     }
   }, [isSuccess, isError]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutation.mutate({ name, email, phone, avatar, address, gender });
+    const formdata = new FormData();
+    formdata.append('avatar', avatar);
+    mutation.mutate({ name, email, phone, avatar, address, gender, formdata });
   };
   return (
     <Grid container spacing={2} py={2}>
+      {isLoading && <LoadingComponent time={2500}></LoadingComponent>}
       <Grid item xs={3} md={3} borderRight="2px solid #ccc">
         <Typography variant="h5">Thông Tin Người Dùng</Typography>
         <Box
@@ -127,6 +107,14 @@ function ProfileUser() {
           {user?.avatar ? (
             <Avatar alt="Remy Sharp" src={user?.avatar} />
           ) : (
+            // <ImageCld
+            //   cloudName="thanhphuongdev"
+            //   publicId={avatar}
+            //   width="300"
+            //   height="200"
+            //   crop="fill"
+            //   alt="Sample Image"
+            // />
             <Avatar>{cutTheFirstLetter(user?.name)}</Avatar>
           )}
           <Typography
@@ -231,8 +219,8 @@ function ProfileUser() {
                     }
                   }}
                 >
-                  {avatar ? (
-                    <Avatar alt="Selected Image" src={avatar} />
+                  {otherAvatar ? (
+                    <Avatar alt="Selected Image" src={otherAvatar} />
                   ) : user?.avatar ? (
                     <Avatar alt="Remy Sharp" src={user?.avatar} />
                   ) : (
@@ -246,6 +234,7 @@ function ProfileUser() {
                 >
                   Chọn Ảnh
                   <input
+                    name="avatar"
                     type="file"
                     accept=".jpg,.jpeg,.png"
                     style={{ display: 'none' }}

@@ -8,18 +8,31 @@ export const getAllProduct = async (limit) => {
 };
 
 export const createProduct = async (data) => {
-  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/create`, {
-    ...data
-  });
+  const res = await axios.post(
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/create`,
+    {
+      ...data
+    },
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+  );
   return res.data;
 };
 
 export const updateProduct = async (id, access_token, data) => {
-  const res = await axiosJWT.put(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/update/${id}`, data, {
-    headers: {
-      access_token: `Beare ${access_token}`
+  const res = await axios.put(
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/update/${id}`,
+    { ...data },
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        access_token: `Beare ${access_token}`
+      }
     }
-  });
+  );
   return res.data;
 };
 
