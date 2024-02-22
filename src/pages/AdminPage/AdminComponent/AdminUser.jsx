@@ -34,7 +34,8 @@ function AdminUser() {
     isAdmin: false,
     phone: '',
     address: '',
-    avatar: ''
+    avatar: '',
+    city: ''
   });
   const styleModal = {
     position: 'absolute',
@@ -88,6 +89,11 @@ function AdminUser() {
       headerName: 'Address',
       width: 130
     },
+    {
+      field: 'city',
+      headerName: 'City',
+      width: 130
+    },
     { field: 'email', headerName: 'Email', width: 230 },
 
     {
@@ -128,7 +134,8 @@ function AdminUser() {
         isAdmin: res?.data.isAdmin || false,
         phone: res?.data.phone || '',
         address: res?.data.address || '',
-        avatar: res?.data.avatar || ''
+        avatar: res?.data.avatar || '',
+        city: res?.data.city || ''
       });
     }
     return res;
@@ -270,6 +277,14 @@ function AdminUser() {
                 id="address"
                 name="address"
                 value={stateUser.address}
+                handleChange={handleChangeUserDetails}
+                width="350px"
+              ></InputComponent>
+              <InputComponent
+                label="City"
+                id="city"
+                name="city"
+                value={stateUser.city}
                 handleChange={handleChangeUserDetails}
                 width="350px"
               ></InputComponent>

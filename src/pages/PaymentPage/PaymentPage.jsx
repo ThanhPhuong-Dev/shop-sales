@@ -12,7 +12,6 @@ import InputForm from '~/components/FormAccount/InputForm/InputForm';
 import * as Toast from '~/utils/reactToasts';
 import InputComponent from '~/components/InputComponent/InputComponent';
 import { updateUser } from '~/redux/Silde/userSilde';
-import { useNavigate } from 'react-router-dom';
 const styleTitleHeader = {
   display: 'flex',
   alignItems: 'center',
@@ -35,13 +34,13 @@ const styleModal = {
   p: 4
 };
 
-function OrderPage() {
+function PaymentPage() {
   const [listChecked, setListChecked] = useState([]);
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const [openModal, setOpenModal] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const [userFormUpdate, setUserFormUpdate] = useState({
     name: '',
     phone: '',
@@ -150,14 +149,12 @@ function OrderPage() {
       Toast.errorToast({ title: 'Hãy Chọn Sản Phẩm' });
     } else if (!user?.name || !user?.address || !user?.phone || !user?.city) {
       setOpenModal(true);
-    } else {
-      navigate('/payment');
     }
   };
 
   return (
     <Box>
-      <Typography sx={{ mb: 2 }}>Giỏ Hàng</Typography>
+      <Typography sx={{ mb: 2 }}>Thanh Toán</Typography>
       <Grid container>
         <Grid item xs={9}>
           {/* headerAll */}
@@ -213,7 +210,7 @@ function OrderPage() {
             </Grid>
           </Grid>
           {/* headerAll end*/}
-          {order?.orderItems?.map((item) => (
+          {order?.selectedOrder?.map((item) => (
             <OrderProductComponent
               key={item.product}
               orderItem={item}
@@ -240,17 +237,6 @@ function OrderPage() {
               right: '172px'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography
-                sx={{ fontSize: '1.4rem', textDecoration: 'underline', fontWeight: 600 }}
-              >{`${user?.address},${user?.city}`}</Typography>
-              <Typography
-                onClick={() => setOpenModal(true)}
-                sx={{ fontSize: '1.4rem', fontWeight: 500, color: '#3498db', cursor: 'pointer' }}
-              >
-                Đổi Địa Chỉ
-              </Typography>
-            </Box>
             <Box
               sx={{
                 mt: 2,
@@ -431,4 +417,4 @@ function OrderPage() {
   );
 }
 
-export default OrderPage;
+export default PaymentPage;

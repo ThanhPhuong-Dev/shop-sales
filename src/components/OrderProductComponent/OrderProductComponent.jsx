@@ -28,7 +28,7 @@ function OrderProductComponent({ orderItem, listChecked, setListChecked }) {
 
     // console.log('e', e.target.value);
   };
-  console.log('listChecked', listChecked);
+
   const handleChangeCrement = (type, idProduct) => {
     if (type === 'decrement') {
       if (orderItem?.amount > 1) {
