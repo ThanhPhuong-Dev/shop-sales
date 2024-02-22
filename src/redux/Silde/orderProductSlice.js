@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   orderItems: [],
-
+  orderItemSelected: [],
   shippingAddress: {},
 
   paymentMethod: '',
@@ -34,29 +34,56 @@ export const orderProductSlice = createSlice({
       const { idProduct } = action.payload;
 
       const itemOrder = state?.orderItems?.find((item) => item?.product === idProduct);
+      const itemOrderSelected = state?.orderItemSelected?.find((item) => item?.product === idProduct);
       itemOrder.amount++;
+      if (itemOrderSelected) {
+        itemOrderSelected.amount++;
+      }
     },
     decreaseAmount: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state?.orderItems?.find((item) => item?.product === idProduct);
+      const itemOrderSelected = state?.orderItemSelected?.find((item) => item?.product === idProduct);
       itemOrder.amount--;
+      if (itemOrderSelected) {
+        itemOrderSelected.amount--;
+      }
     },
     removeOrderProduct: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state?.orderItems?.filter((item) => item?.product !== idProduct);
+      const itemOrderSelected = state?.orderItemSelected?.filter((item) => item?.product !== idProduct);
 
       state.orderItems = itemOrder;
+      if (itemOrderSelected) {
+        state.orderItemSelected = itemOrderSelected;
+      }
     },
     removeAll: (state, action) => {
       const { listChecked } = action.payload;
       const itemOrder = state?.orderItems?.filter((item) => !listChecked.includes(item.product));
+      const itemOrderSelected = state?.orderItemSelected?.filter((item) => !listChecked.includes(item.product));
+
       state.orderItems = itemOrder;
+      if (itemOrderSelected) {
+        state.orderItemSelected = itemOrderSelected;
+      }
+    },
+    selectedOrder: (state, action) => {
+      const { listChecked } = action.payload;
+      const orderSelected = [];
+      state.orderItems.forEach((order) => {
+        if (listChecked.includes(order.product)) {
+          orderSelected.push(order);
+        }
+      });
+      state.orderItemSelected = orderSelected;
     }
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct, removeAll } =
+export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct, removeAll, selectedOrder } =
   orderProductSlice.actions;
 
 export default orderProductSlice.reducer;
