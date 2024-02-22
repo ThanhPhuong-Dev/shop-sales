@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Container, Typography } from '@mui/material';
+import { Badge, Container, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ function HeaderComponent() {
   const [searchValue, setSearchValue] = useState('');
   const [resultSearch, setResultSearch] = useState([]);
   const [showResult, setShowResult] = useState(true);
+  const orderProduct = useSelector((state) => state.order);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const hadnleClickUser = () => {
@@ -78,11 +79,12 @@ function HeaderComponent() {
             justifyContent: 'center'
           }}
         >
-          <a href="/">
+          <Box onClick={() => navigate('/')}>
             <Box
               sx={{
                 width: '70px',
                 height: '70px',
+                cursor: 'pointer',
                 '& img': {
                   width: '100%',
                   height: '100%'
@@ -91,7 +93,7 @@ function HeaderComponent() {
             >
               <img src={logo}></img>
             </Box>
-          </a>
+          </Box>
 
           <Typography
             variant="h4"
@@ -213,18 +215,31 @@ function HeaderComponent() {
           )}
 
           <Box
+            onClick={() => navigate('/order')}
             sx={{
               display: 'flex',
               alignItems: 'center'
             }}
           >
-            <ShoppingCartIcon
+            <Badge
               sx={{
-                fontSize: '3rem',
-                color: 'white',
-                cursor: 'pointer'
+                '& .MuiBadge-badge': {
+                  fontSize: '1.3rem',
+                  fontWeight: 600
+                }
               }}
-            ></ShoppingCartIcon>
+              badgeContent={orderProduct?.orderItems?.length}
+              color="primary"
+              max={99}
+            >
+              <ShoppingCartIcon
+                sx={{
+                  fontSize: '3rem',
+                  color: 'white',
+                  cursor: 'pointer'
+                }}
+              ></ShoppingCartIcon>
+            </Badge>
           </Box>
         </Box>
       </Container>

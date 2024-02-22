@@ -1,19 +1,25 @@
 import { Box, Button, Card, CardMedia, Grid, Rating, Typography } from '@mui/material';
 import img1 from '~/assets/img/anh1.jpg';
 import StarIcon from '@mui/icons-material/Star';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as ProductServices from '~/services/productService';
 import { useQuery } from 'react-query';
 import formatNumber from '~/utils/formatNumber';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
+import { useDispatch, useSelector } from 'react-redux';
+import { addOrderProduct } from '~/redux/Silde/orderProductSlice';
+
 function ProDuctDetail({ idProduct }) {
   const [star, setStar] = useState(2);
-  const [value, setValue] = useState(1);
-
+  const [amount, setAmount] = useState(1);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const styleDescription = {
     display: 'flex',
     mt: 2,
@@ -35,7 +41,6 @@ function ProDuctDetail({ idProduct }) {
     borderRaduis: '10px',
     boxShadow: '2px 0px 10px #ccc'
   };
-
   const fetchProductDetail = async (context) => {
     const id = context?.queryKey && context?.queryKey[1];
     const res = await ProductServices.getProductDetails(id);
@@ -45,14 +50,48 @@ function ProDuctDetail({ idProduct }) {
   const { data: productDetail, isLoading } = useQuery(['productDetail', idProduct], fetchProductDetail, {
     enabled: !!idProduct
   });
+
+  const handleAddCart = () => {
+    if (!user?.id) {
+      navigate('/login', { state: location.pathname });
+    } else {
+      // orderItems: [
+      //   {
+      //     name: { type: String, required: true },
+      //     amount: { type: Number, required: true },
+      //     image: { type: String, required: true },
+      //     price: { type: Number, required: true },
+      //     product: {
+      //       type: mongoose.Schema.Types.ObjectId,
+      //       ref: 'Product',
+      //       required: true
+      //     }
+      //   }
+      // ],
+      dispatch(
+        addOrderProduct({
+          orderItem: {
+            name: productDetail?.data?.name,
+            amount: amount,
+            image: productDetail?.data?.image,
+            price: productDetail?.data?.price,
+            product: productDetail?.data?._id
+          }
+        })
+      );
+    }
+  };
+
+  // console.log('productDetail', productDetail);
+
   const handleDecrement = () => {
-    if (value > 1) {
-      setValue(value - 1);
+    if (amount > 1) {
+      setAmount(amount - 1);
     }
   };
 
   const handleIncrement = () => {
-    setValue(value + 1);
+    setAmount(amount + 1);
   };
 
   return (
@@ -200,9 +239,9 @@ function ProDuctDetail({ idProduct }) {
                 <Typography>{productDetail?.data?.rating}.0</Typography>
                 <Rating
                   name="simple-controlled"
-                  value={star}
-                  onChange={(event, newValue) => {
-                    setStar(newValue);
+                  amount={star}
+                  onChange={(event, newamount) => {
+                    setStar(newamount);
                   }}
                 />
               </Box>
@@ -265,7 +304,7 @@ function ProDuctDetail({ idProduct }) {
                 <Button variant="outlined" onClick={handleDecrement}>
                   <RemoveIcon></RemoveIcon>
                 </Button>
-                <Typography>{value}</Typography>
+                <Typography>{amount}</Typography>
                 <Button variant="outlined" onClick={handleIncrement}>
                   <AddIcon></AddIcon>
                 </Button>
@@ -289,6 +328,7 @@ function ProDuctDetail({ idProduct }) {
               <Button
                 variant="outlined"
                 startIcon={<AddShoppingCartIcon></AddShoppingCartIcon>}
+                onClick={handleAddCart}
                 sx={{
                   color: '#ee4d2d',
                   background: 'rgba(255,87,34,0.1)',
