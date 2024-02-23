@@ -75,7 +75,8 @@ function ProDuctDetail({ idProduct }) {
             amount: amount,
             image: productDetail?.data?.image,
             price: productDetail?.data?.price,
-            product: productDetail?.data?._id
+            product: productDetail?.data?._id,
+            type: productDetail?.data?.type
           }
         })
       );

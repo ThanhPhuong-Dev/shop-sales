@@ -1,87 +1,47 @@
 import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, Modal, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import OrderProductComponent from '~/components/OrderProductComponent/OrderProductComponent';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeAll, selectedOrder } from '~/redux/Silde/orderProductSlice';
-import formatNumber from '~/utils/formatNumber';
-import { useQuery } from 'react-query';
-import * as UserServices from '~/services/userService';
-import { useMutationHook } from '~/hooks/useMutationHook';
-import InputForm from '~/components/FormAccount/InputForm/InputForm';
-import * as Toast from '~/utils/reactToasts';
-import InputComponent from '~/components/InputComponent/InputComponent';
-import { updateUser } from '~/redux/Silde/userSilde';
-const styleTitleHeader = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 
-  '& .MuiTypography-root ': {
-    fontSize: '1.4rem',
-    fontWeight: 600
-  }
-};
-const styleModal = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4
-};
+import { useDispatch, useSelector } from 'react-redux';
+
+import formatNumber from '~/utils/formatNumber';
+
+import * as Toast from '~/utils/reactToasts';
+import * as OrderServices from '~/services/orderService';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useMutationHook } from '~/hooks/useMutationHook';
+import { orderProductBuy } from '~/redux/Silde/orderProductSlice';
+import { useNavigate } from 'react-router-dom';
 
 function PaymentPage() {
-  const [listChecked, setListChecked] = useState([]);
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
-  const [openModal, setOpenModal] = useState(false);
-  const dispatch = useDispatch();
-
-  const [userFormUpdate, setUserFormUpdate] = useState({
-    name: '',
-    phone: '',
+  const navigate = useNavigate();
+  const [delivery, setDelivery] = useState('GO_JEK');
+  const [payment, setPayment] = useState('later_money');
+  const [shippingAddress, setShippingAddress] = useState({
+    fullname: '',
     address: '',
+    phone: '',
     city: ''
   });
 
   useEffect(() => {
-    setUserFormUpdate({
-      name: user?.name || '',
-      phone: user?.phone || '',
+    setShippingAddress({
+      fullname: user?.name || '',
       address: user?.address || '',
+      phone: user?.phone || '',
       city: user?.city || ''
     });
   }, [user]);
-
-  const handleChangeCheckBoxAll = (e) => {
-    if (e.target.checked) {
-      let newListCheckAll = [];
-      order?.orderItems?.forEach((item) => newListCheckAll.push(item.product));
-      setListChecked(newListCheckAll);
-    } else {
-      setListChecked([]);
-    }
-  };
-  const handleRemoveALl = () => {
-    if (listChecked.length > 1) {
-      dispatch(removeAll({ listChecked }));
-      setListChecked([]);
-    }
-  };
-  useEffect(() => {
-    dispatch(selectedOrder({ listChecked }));
-  }, [listChecked]);
-
+  const dispatch = useDispatch();
+  const accessUser = localStorage.getItem('access_token');
   const priceMemo = useMemo(() => {
     const result = order?.orderItemSelected?.reduce((total, item) => {
       return total + item.price * item.amount;
     }, 0);
+
     return result;
-  }, [order]);
+  }, []);
 
   const discountMemo = useMemo(() => {
     const result = order?.orderItemSelected?.reduce((total, item) => {
@@ -91,7 +51,7 @@ function PaymentPage() {
       return result;
     }
     return 0;
-  }, [order]);
+  }, []);
 
   const deliveryMemo = useMemo(() => {
     if (priceMemo < 100000 && priceMemo > 1) {
@@ -105,50 +65,52 @@ function PaymentPage() {
     } else {
       return Number(150000 + Number(priceMemo) * 0.01);
     }
-  }, [order]);
+  }, []);
+  const checkDelivery = useMemo(() => {
+    if (delivery == 'FAST') {
+      return Number(deliveryMemo + 26000);
+    } else {
+      return Number(deliveryMemo);
+    }
+  }, [delivery]);
 
   const totalPriceMemo = useMemo(() => {
-    return Number(priceMemo) - Number(discountMemo) + Number(deliveryMemo);
-  }, [priceMemo, discountMemo, deliveryMemo]);
+    return Number(priceMemo) - Number(discountMemo) + Number(checkDelivery);
+  }, [priceMemo, discountMemo, checkDelivery]);
 
-  const handleChangeUpdate = (e) => {
-    setUserFormUpdate({
-      ...userFormUpdate,
-      [e.target.name]: e.target.value
-    });
+  const handleChangeCheckbox = (e) => {
+    setDelivery(e.target.value);
   };
-
-  const mutationUpdate = useMutationHook(async (data) => {
-    const res = await UserServices.updateUser(user?.id, data);
+  const mutationPayment = useMutationHook((data) => {
+    const res = OrderServices.createOrder(accessUser, data);
     return res;
   });
-
-  const handleSubmitUpdate = (e) => {
-    e.preventDefault();
-    mutationUpdate.mutate(
-      { ...userFormUpdate },
-      {
-        onSuccess: (user) => {
-          dispatch(updateUser({ ...user?.data }));
-          setOpenModal(false);
-        }
-      }
-    );
-  };
-  const handleExit = () => {
-    setUserFormUpdate({
-      name: user?.name || '',
-      phone: user?.phone || '',
-      address: user?.address || '',
-      city: user?.city || ''
-    });
-    setOpenModal(false);
-  };
   const ClickBuyProduct = () => {
-    if (listChecked?.length < 1) {
-      Toast.errorToast({ title: 'Hãy Chọn Sản Phẩm' });
-    } else if (!user?.name || !user?.address || !user?.phone || !user?.city) {
-      setOpenModal(true);
+    if (user?.name || user?.address || user?.phone || user?.city) {
+      mutationPayment.mutate(
+        {
+          orderItems: order?.orderItemSelected,
+          paymentMethod: payment,
+          itemsPrice: priceMemo,
+          shippingPrice: checkDelivery,
+          totalPrice: totalPriceMemo,
+          user: user?.id,
+          shippingAddress: shippingAddress
+        },
+        {
+          onSuccess: (dataSuccess) => {
+            if (dataSuccess?.status == 'OK') {
+              Toast.successToast({ title: 'Đặt Hàng Thành Công' });
+              const orderOther = dataSuccess.data.orderItems.map((order) => {
+                return order.product;
+              });
+
+              navigate('/');
+              dispatch(orderProductBuy({ orderOther: orderOther }));
+            }
+          }
+        }
+      );
     }
   };
 
@@ -157,67 +119,168 @@ function PaymentPage() {
       <Typography sx={{ mb: 2 }}>Thanh Toán</Typography>
       <Grid container>
         <Grid item xs={9}>
-          {/* headerAll */}
-          <Grid
-            container
-            sx={{ p: 1, borderRadius: '10px', backgroundColor: 'white', boxShadow: ' 0px -2px 12px #ccc' }}
-          >
-            <Grid item xs={5}>
-              <FormControlLabel
-                sx={{
-                  marginLeft: '0',
-                  '& .MuiTypography-root': {
-                    fontSize: '1.4rem',
-                    fontWeight: 600
-                  }
-                }}
-                label={`Tất Cả (${order?.orderItems?.length} Sản Phẩm )`}
-                control={
-                  <Checkbox
-                    checked={listChecked?.length === order?.orderItems?.length}
-                    onChange={handleChangeCheckBoxAll}
-                  />
+          {/* Thông Tin */}
+          <Box sx={{ padding: '28px 30px 24px', mb: 2, backgroundColor: 'white', boxShadow: '0px 2px 6px #ccc' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: 1 }}>
+              <LocationOnIcon sx={{ fontSize: '3rem', color: '#ee4d2d' }}></LocationOnIcon>
+              <Typography sx={{ color: '#ee4d2d', fontSize: '1.8rem' }}>Địa Chỉ Nhận Hàng</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                '& .MuiTypography-root ': {
+                  fontSize: '1.6rem'
                 }
-              />
-            </Grid>
-            <Grid container item xs={7}>
-              <Grid item xs={4} sx={styleTitleHeader}>
-                <Typography sx={{}}>Đơn Giá</Typography>
-              </Grid>
-              <Grid item xs={3} sx={styleTitleHeader}>
-                <Typography>Số Lượng</Typography>
-              </Grid>
-              <Grid item xs={4} sx={styleTitleHeader}>
-                <Typography>Thành Tiền</Typography>
-              </Grid>
-              <Grid
-                item
-                xs={1}
+              }}
+            >
+              <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderLeft: '1px solid #ccc',
-                  '& .MuiSvgIcon-root ': {
-                    fontSize: '2rem'
+                  width: '200px',
+                  '& .MuiTypography-root ': {
+                    fontWeight: 700
                   }
                 }}
               >
-                <IconButton aria-label="delete" onClick={handleRemoveALl}>
-                  <DeleteIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Grid>
-          {/* headerAll end*/}
-          {order?.selectedOrder?.map((item) => (
-            <OrderProductComponent
-              key={item.product}
-              orderItem={item}
-              listChecked={listChecked}
-              setListChecked={setListChecked}
-            ></OrderProductComponent>
-          ))}
+                <Typography>{user?.name}</Typography>
+                <Typography>{user?.phone}</Typography>
+              </Box>
+              <Box sx={{ marginLeft: '20px', flex: 1, overflow: 'hidden' }}>
+                <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {`${user?.address} , ${user?.city}`}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box sx={{ backgroundColor: 'white', padding: '28px 30px 24px', boxShadow: '0px 2px 6px #ccc', mb: 2 }}>
+            {/* sản phẩm */}
+            {order?.orderItemSelected?.map((product) => (
+              <Box
+                key={product.product}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '10px',
+                  mb: 2,
+                  border: '1px solid #ee4d2d',
+                  borderRadius: '10px'
+                }}
+              >
+                <Box sx={{ width: '50px', height: '50px', padding: '4px', border: '2px dashed #ee4d2d' }}>
+                  <img style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" src={product.image}></img>
+                </Box>
+                <Box sx={{ width: '200px', overflow: 'hidden', mx: 2 }}>
+                  <Typography sx={{ fontSize: '1.4rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {product.name}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Box>
+                    <Typography
+                      sx={{ fontSize: '1.2rem', color: '#929292', width: '150px' }}
+                    >{`Loại: ${product.type}`}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography
+                      sx={{ fontSize: '1.2rem', color: '#929292', width: '100px' }}
+                    >{`Số Lương: ${product.amount}`}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontSize: '1.2rem', color: '#929292', flex: 1 }}>{`Thành Tiền: ${formatNumber(
+                      product.price * product.amount
+                    )}đ`}</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+
+            {/* sản phẩm */}
+          </Box>
+
+          {/* Thanh toán */}
+          <Box sx={{ backgroundColor: 'white', padding: '28px 30px 24px', boxShadow: '0px 2px 6px #ccc', mb: 2 }}>
+            <Box sx={{ mb: 4 }}>
+              <Typography sx={{ fontSize: '1.6rem', fontWeight: 600, mb: 1 }}>Chọn Phương Thức Giao Hàng</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '20px 10px',
+                  background: 'rgb(240, 248, 255)',
+                  border: '1px solid rgb(194, 225, 255)',
+                  borderRadius: '10px'
+                }}
+              >
+                <FormControlLabel
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', fontSize: '1.4rem' }}>
+                      <Typography
+                        sx={{
+                          color: 'red',
+                          mr: 1,
+                          fontSize: '1.4rem',
+                          fontWeight: 600,
+                          width: '70px'
+                        }}
+                      >
+                        GO_JEK
+                      </Typography>
+                      Giao Hàng Tiết Kiệm
+                    </Box>
+                  }
+                  control={<Checkbox value="GO_JEK" checked={delivery === 'GO_JEK'} onChange={handleChangeCheckbox} />}
+                />
+                <FormControlLabel
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', fontSize: '1.4rem' }}>
+                      <Typography
+                        sx={{
+                          color: 'red',
+                          mr: 1,
+                          fontSize: '1.4rem',
+                          fontWeight: 600,
+                          width: '70px'
+                        }}
+                      >
+                        FAST
+                      </Typography>{' '}
+                      Giao Hàng Nhanh Chóng
+                    </Box>
+                  }
+                  control={<Checkbox value="FAST" checked={delivery === 'FAST'} onChange={handleChangeCheckbox} />}
+                />
+              </Box>
+            </Box>
+
+            <Box>
+              <Typography sx={{ fontSize: '1.6rem', fontWeight: 600, mb: 2 }}>Chọn Phương Thức Thanh Toán</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '20px 10px',
+                  background: 'rgb(240, 248, 255)',
+                  border: '1px solid rgb(194, 225, 255)',
+                  borderRadius: '10px'
+                }}
+              >
+                <FormControlLabel
+                  label={<Typography sx={{ fontSize: '1.4rem' }}>Thanh Toán Tiền Mặt Khi Nhận Hàng</Typography>}
+                  control={
+                    <Checkbox
+                      defaultChecked
+                      // checked={checked[0] && checked[1]}
+                      // indeterminate={checked[0] !== checked[1]}
+                      // onChange={handleChange1}
+                    />
+                  }
+                />
+              </Box>
+            </Box>
+          </Box>
         </Grid>
 
         <Grid item xs={3}>
@@ -291,7 +354,11 @@ function PaymentPage() {
               }}
             >
               <Typography>Phí Giao Hàng</Typography>
-              <Typography sx={{ fontWeight: 600 }}>{deliveryMemo && formatNumber(deliveryMemo)}đ</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {deliveryMemo &&
+                  (delivery === 'FAST' ? formatNumber(deliveryMemo + 26000) : formatNumber(deliveryMemo))}
+                đ
+              </Typography>
             </Box>
             <Box
               sx={{
@@ -325,94 +392,11 @@ function PaymentPage() {
                 }
               }}
             >
-              Mua Ngay
+              Đặt Hàng
             </Button>
           </Box>
         </Grid>
       </Grid>
-      {/* modal */}
-      <Modal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={styleModal}>
-          <Typography sx={{ mb: 2, fontSize: '1.6rem', fontWeight: 700, textAlign: 'center' }}>
-            Thông Tin Khách Hàng
-          </Typography>
-          <form onSubmit={handleSubmitUpdate}>
-            <InputComponent
-              label="Name"
-              id="name"
-              type="text"
-              name="name"
-              value={userFormUpdate.name}
-              handleChange={handleChangeUpdate}
-              width="250px"
-            ></InputComponent>
-            <InputComponent
-              label="Phone"
-              id="phone"
-              type="text"
-              name="phone"
-              value={userFormUpdate.phone}
-              handleChange={handleChangeUpdate}
-              width="250px"
-            ></InputComponent>
-            <InputComponent
-              label="City"
-              id="city"
-              type="text"
-              name="city"
-              value={userFormUpdate.city}
-              handleChange={handleChangeUpdate}
-              width="250px"
-            ></InputComponent>
-            <InputComponent
-              label="Address"
-              id="address"
-              type="text"
-              name="address"
-              value={userFormUpdate.address}
-              handleChange={handleChangeUpdate}
-              width="250px"
-            ></InputComponent>
-            <Box
-              sx={{
-                gap: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                '& .MuiButtonBase-root': {
-                  padding: '10px',
-                  transition: '0.5s',
-                  fontWeight: 600,
-
-                  '&:hover': {
-                    background: '#2c3e50',
-                    color: 'white'
-                  }
-                }
-              }}
-            >
-              <Button variant="outlined" sx={{ border: '1px solid #ee4d2d', color: '#ee4d2d' }} onClick={handleExit}>
-                Thoát
-              </Button>
-              <Button
-                disabled={
-                  !userFormUpdate.city || !userFormUpdate.name || !userFormUpdate.address || !userFormUpdate.phone
-                }
-                type="submit"
-                variant="contained"
-                sx={{ backgroundColor: '#ee4d2d' }}
-              >
-                Cập Nhật
-              </Button>
-            </Box>
-          </form>
-        </Box>
-      </Modal>
     </Box>
   );
 }

@@ -78,12 +78,24 @@ export const orderProductSlice = createSlice({
         }
       });
       state.orderItemSelected = orderSelected;
+    },
+    orderProductBuy: (state, action) => {
+      const { orderOther } = action.payload;
+      const orderItemOther = state?.orderItems?.filter((order) => !orderOther.includes(order.product));
+      state.orderItems = orderItemOther;
     }
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { addOrderProduct, increaseAmount, decreaseAmount, removeOrderProduct, removeAll, selectedOrder } =
-  orderProductSlice.actions;
+export const {
+  addOrderProduct,
+  increaseAmount,
+  decreaseAmount,
+  removeOrderProduct,
+  removeAll,
+  selectedOrder,
+  orderProductBuy
+} = orderProductSlice.actions;
 
 export default orderProductSlice.reducer;
