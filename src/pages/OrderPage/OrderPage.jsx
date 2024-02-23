@@ -156,7 +156,7 @@ function OrderPage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ height: '100vh' }}>
       <Typography sx={{ mb: 2 }}>Giỏ Hàng</Typography>
       <Grid container>
         <Grid item xs={9}>
@@ -240,10 +240,10 @@ function OrderPage() {
               right: '172px'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography
-                sx={{ fontSize: '1.4rem', textDecoration: 'underline', fontWeight: 600 }}
-              >{`${user?.address},${user?.city}`}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+              <Typography sx={{ fontSize: '1.4rem', textDecoration: 'underline', fontWeight: 600 }}>
+                {user?.city}
+              </Typography>
               <Typography
                 onClick={() => setOpenModal(true)}
                 sx={{ fontSize: '1.4rem', fontWeight: 500, color: '#3498db', cursor: 'pointer' }}

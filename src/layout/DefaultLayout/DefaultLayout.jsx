@@ -10,8 +10,9 @@ function DefaultLayout({ children }) {
         sx={{
           marginTop: '70px',
           paddingTop: '8px',
-          px: 0
-          //  background: '#ffffff'
+          px: 0,
+
+          paddingRight: '0px !important'
         }}
       >
         {children}
