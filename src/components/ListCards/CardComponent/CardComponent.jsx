@@ -19,12 +19,15 @@ const fadeIn = keyframes`
 
 function CardComponent({ product }) {
   const navigate = useNavigate();
+  console.log('product', product);
   const stars = Array.from({ length: product?.rating }, (_, index) => <StarIcon key={index} />);
   const handleClickCard = () => {
     navigate(`/product-details/${product._id}`);
   };
+
   return (
     <Card
+      hidden={product?.countInStock < 0}
       onClick={handleClickCard}
       sx={{
         maxWidth: 200,

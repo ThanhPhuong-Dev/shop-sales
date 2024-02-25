@@ -10,7 +10,8 @@ const initialState = {
   avatar: '',
   city: '',
   access_token: '',
-  isAdmin: false
+  isAdmin: false,
+  orderProduct: []
 };
 
 export const userSlide = createSlice({
@@ -40,11 +41,20 @@ export const userSlide = createSlice({
       state.avatar = '';
       state.access_token = '';
       state.isAdmin = false;
+    },
+    addOrderUser: (state, action) => {
+      const { orderItemSelected } = action.payload;
+      console.log('orderItemSelected', orderItemSelected);
+      const otherOrderUser = [];
+      orderItemSelected?.forEach((item) => {
+        otherOrderUser.push(item);
+      });
+     
     }
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { updateUser, resetUser } = userSlide.actions;
+export const { updateUser, resetUser, addOrderUser } = userSlide.actions;
 
 export default userSlide.reducer;

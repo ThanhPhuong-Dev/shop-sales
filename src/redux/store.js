@@ -1,20 +1,17 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './Silde/userSilde';
-import productSearch from './Silde/ProductSlice';
 import orderReducer from './Silde/orderProductSlice';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-  blacklist: ['user', 'product']
+  blacklist: ['user']
 };
 const rootReducer = combineReducers({
   user: userReducer,
-  product: productSearch,
   order: orderReducer
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);

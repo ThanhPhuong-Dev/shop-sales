@@ -4,7 +4,7 @@ const initialState = {
   orderItems: [],
   orderItemSelected: [],
   shippingAddress: {},
-
+  delivery: '',
   paymentMethod: '',
   itemsPrice: 0,
   shippingPrice: 0,
@@ -80,9 +80,10 @@ export const orderProductSlice = createSlice({
       state.orderItemSelected = orderSelected;
     },
     orderProductBuy: (state, action) => {
-      const { orderOther } = action.payload;
+      const { orderOther, delivery } = action.payload;
       const orderItemOther = state?.orderItems?.filter((order) => !orderOther.includes(order.product));
       state.orderItems = orderItemOther;
+      state.delivery = delivery;
     }
   }
 });

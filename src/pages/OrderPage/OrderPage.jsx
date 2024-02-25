@@ -11,8 +11,9 @@ import { useMutationHook } from '~/hooks/useMutationHook';
 import InputForm from '~/components/FormAccount/InputForm/InputForm';
 import * as Toast from '~/utils/reactToasts';
 import InputComponent from '~/components/InputComponent/InputComponent';
-import { updateUser } from '~/redux/Silde/userSilde';
+import { addOrderUser, updateUser } from '~/redux/Silde/userSilde';
 import { useNavigate } from 'react-router-dom';
+import StepperComponent from '~/components/StepperComponent/StepperComponent';
 const styleTitleHeader = {
   display: 'flex',
   alignItems: 'center',
@@ -151,6 +152,7 @@ function OrderPage() {
     } else if (!user?.name || !user?.address || !user?.phone || !user?.city) {
       setOpenModal(true);
     } else {
+      
       navigate('/payment');
     }
   };
@@ -158,9 +160,11 @@ function OrderPage() {
   return (
     <Box sx={{ height: '100vh' }}>
       <Typography sx={{ mb: 2 }}>Giỏ Hàng</Typography>
+
       <Grid container>
         <Grid item xs={9}>
           {/* headerAll */}
+
           <Grid
             container
             sx={{ p: 1, borderRadius: '10px', backgroundColor: 'white', boxShadow: ' 0px -2px 12px #ccc' }}

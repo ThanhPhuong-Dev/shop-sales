@@ -21,7 +21,7 @@ function SearchResult({ product, handleHide }) {
         }
       }}
     >
-      <Box sx={{ width: '50px', height: '50px', mr: 2 }}>
+      <Box sx={{ width: '50px', height: '50px', overflow: 'hidden', mr: 2 }}>
         <img src={product?.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }}></img>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
