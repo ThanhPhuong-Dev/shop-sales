@@ -28,7 +28,6 @@ function HomePages() {
 
   const productAll = useQuery(['product', limit], fetchDataProductAll, { retry: 3, retryDelay: 1000 });
   const { data: ProductData, isLoading } = productAll;
-
   const handleTypeChip = (e) => {
     const typeName = e.target.innerText;
     navigate(

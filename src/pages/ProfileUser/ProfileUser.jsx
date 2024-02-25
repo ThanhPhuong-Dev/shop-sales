@@ -10,6 +10,7 @@ import RadioProfile from './RadioProfile/RadioProfile';
 import * as Toast from '~/utils/reactToasts';
 import { updateUser } from '~/redux/Silde/userSilde';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
+import ProfileUserGrid3 from '~/components/ProfileUserGrid3/ProfileUserGrid3';
 function ProfileUser() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -86,50 +87,7 @@ function ProfileUser() {
   return (
     <Grid container spacing={2} py={2}>
       {isLoading && <LoadingComponent time={2500}></LoadingComponent>}
-      <Grid item xs={3} md={3} borderRight="2px solid #ccc">
-        <Typography variant="h5">Thông Tin Người Dùng</Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mt: 2,
-            '& .MuiAvatar-root': {
-              bgcolor: '#ef6c00',
-              width: '50px',
-              height: '50px',
-              fontWeight: 700,
-              fontSize: '1.5rem',
-              textAlign: 'center',
-              mr: 2
-            }
-          }}
-        >
-          {user?.avatar ? (
-            <Avatar alt="Remy Sharp" src={user?.avatar} />
-          ) : (
-            // <ImageCld
-            //   cloudName="thanhphuongdev"
-            //   publicId={avatar}
-            //   width="300"
-            //   height="200"
-            //   crop="fill"
-            //   alt="Sample Image"
-            // />
-            <Avatar>{cutTheFirstLetter(user?.name)}</Avatar>
-          )}
-          <Typography
-            sx={{
-              fontSize: '1.8rem',
-              fontWeight: 600,
-              overflow: 'hidden',
-              whiteSpace: 'normal' /* Ngăn chữ xuống dòng */,
-              textOverflow: 'ellipsis'
-            }}
-          >
-            {user?.name}
-          </Typography>
-        </Box>
-      </Grid>
+      <ProfileUserGrid3 user={user}></ProfileUserGrid3>
       <Grid item xs={9} md={9}>
         <Box
           sx={{

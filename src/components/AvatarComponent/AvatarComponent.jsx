@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetUser } from '~/redux/Silde/userSilde';
 import { useNavigate } from 'react-router-dom';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
-
+import StoreIcon from '@mui/icons-material/Store';
 function AvatarComponent({ user }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -154,6 +154,10 @@ function AvatarComponent({ user }) {
         <MenuItem onClick={() => navigate('/profile')}>
           <AccountCircleIcon></AccountCircleIcon>
           <Typography>Thông Tin Người Dùng</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => navigate('/purchase')}>
+          <StoreIcon></StoreIcon>
+          <Typography>Thông Tin Mua Hàng</Typography>
         </MenuItem>
         {user?.isAdmin && (
           <MenuItem onClick={() => navigate('/system/admin')}>

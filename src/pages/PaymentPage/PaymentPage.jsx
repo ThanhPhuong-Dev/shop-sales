@@ -11,19 +11,57 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import { orderProductBuy } from '~/redux/Silde/orderProductSlice';
 import { useNavigate } from 'react-router-dom';
+import logo from '~/assets/img/logo.png';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { addOrderUser } from '~/redux/Silde/userSilde';
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4
+};
 
 function PaymentPage() {
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
+  const [modalSuccess, setModalSuccess] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState('GO_JEK');
   const [payment, setPayment] = useState('later_money');
+  const [timeHome, setTimeHome] = useState(12);
+  const [running, setRunning] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
     fullname: '',
     address: '',
     phone: '',
     city: ''
   });
+
+  useEffect(() => {
+    let interval;
+    if (running) {
+      interval = setInterval(() => {
+        setTimeHome((prevCount) => {
+          if (prevCount === 0) {
+            clearInterval(interval);
+            navigate('/');
+            return prevCount;
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
+    }
+
+    // Clear interval khi component unmount
+    return () => clearInterval(interval);
+  }, [running]);
 
   useEffect(() => {
     setShippingAddress({
@@ -33,7 +71,10 @@ function PaymentPage() {
       city: user?.city || ''
     });
   }, [user]);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(addOrderUser({ orderItemSelected: order?.orderItemSelected }));
+  }, []);
+
   const accessUser = localStorage.getItem('access_token');
   const priceMemo = useMemo(() => {
     const result = order?.orderItemSelected?.reduce((total, item) => {
@@ -101,12 +142,12 @@ function PaymentPage() {
           onSuccess: (dataSuccess) => {
             if (dataSuccess?.status == 'OK') {
               Toast.successToast({ title: 'Đặt Hàng Thành Công' });
-              const orderOther = dataSuccess.data.orderItems.map((order) => {
+              const orderOther = order?.orderItemSelected?.map((order) => {
                 return order.product;
               });
-
-              navigate('/');
-              dispatch(orderProductBuy({ orderOther: orderOther }));
+              setModalSuccess(true);
+              setRunning(true);
+              dispatch(orderProductBuy({ orderOther: orderOther, delivery: delivery }));
             }
           }
         }
@@ -397,6 +438,100 @@ function PaymentPage() {
           </Box>
         </Grid>
       </Grid>
+
+      {/* modal */}
+      <Modal open={modalSuccess} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box sx={style}>
+          {/* logo */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Box onClick={() => navigate('/')}>
+              <Box
+                sx={{
+                  width: '70px',
+                  height: '70px',
+                  cursor: 'pointer',
+                  '& img': {
+                    width: '100%',
+                    height: '100%'
+                  }
+                }}
+              >
+                <img src={logo}></img>
+              </Box>
+            </Box>
+
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 600,
+                color: '#cca77f',
+                fontFamily: 'Rubik Maps'
+              }}
+            >
+              PHUONG
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+            <ShoppingBagIcon sx={{ fontSize: '6rem' }}></ShoppingBagIcon>
+            <Box
+              sx={{ position: 'absolute', bottom: '-8px', right: '133px', background: 'white', borderRadius: '50%' }}
+            >
+              <CheckCircleIcon sx={{ fontSize: '3rem', color: '#cca77f' }}></CheckCircleIcon>
+            </Box>
+          </Box>
+          <Typography
+            sx={{
+              fontSize: '1.6rem',
+              fontWeight: 700,
+              textAlign: 'center',
+              mt: 3,
+              pb: 2,
+              borderBottom: '1px solid black'
+            }}
+          >
+            Mua Hàng Thành Công
+          </Typography>
+          <Box sx={{ mt: 3 }}>
+            timeHome
+            <Typography sx={{ fontSize: '1.4rem', textAlign: 'center' }}>Cảm ơn bạn đã mua sắm tại website</Typography>
+            <Typography
+              sx={{ fontSize: '1.4rem', textAlign: 'center' }}
+            >{`Quay trở lại trang chủ sau ${timeHome}`}</Typography>
+            <Box
+              sx={{
+                mt: 2,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+                '& .MuiButtonBase-root': {
+                  flex: 1,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  padding: '12px 0'
+                }
+              }}
+            >
+              <Button
+                variant="outlined"
+                sx={{ color: '#34495e', border: '1px solid #34495e' }}
+                onClick={() => navigate('/payment/success')}
+              >
+                Theo dõi đơn hàng
+              </Button>
+              <Button variant="contained" sx={{ background: '#34495e' }} onClick={() => navigate('/')}>
+                Tiếp tục mua sắm
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 }
