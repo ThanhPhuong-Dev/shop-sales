@@ -7,8 +7,10 @@ import PurchaseChildren from './PageChildren/PurchaseChildren';
 import { useQuery } from 'react-query';
 import * as OrderServices from '~/services/orderService';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Typography } from '@mui/material';
+import { useMutationHook } from '~/hooks/useMutationHook';
+import * as Toasts from '~/utils/reactToasts';
 function TabsComponent() {
   const [value, setValue] = useState(0);
   const user = useSelector((state) => state.user);
@@ -16,14 +18,27 @@ function TabsComponent() {
     setValue(newValue);
   };
 
-  const fetchOrderUser = (context) => {
-    console.log('context', context);
-    const queryId = context.queryKey[1];
-    const res = OrderServices.getOrderUser(queryId);
+  const fetchOrderUser = () => {
+    const res = OrderServices.getOrderUser(user?.id);
     return res;
   };
-  const orderUser = useQuery(['order-user', user?.id], fetchOrderUser);
-  // console.log('orderUser', orderUser?.data?.totalOrderUser.length);
+  const orderUser = useQuery(['order-user'], fetchOrderUser, { enabled: !!user?.id });
+  const mutationCancel = useMutationHook((data) => {
+    const res = OrderServices.orderCancel(data?.id);
+    return res;
+  });
+  const handleCancel = (id) => {
+    mutationCancel.mutate(
+      { id },
+      {
+        onSettled: () => {
+          Toasts.successToast({ title: 'Xóa thành công' });
+          orderUser.refetch();
+        }
+      }
+    );
+  };
+  
   return (
     <Box>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: 'white' }}>
@@ -50,7 +65,11 @@ function TabsComponent() {
             </Box>
           ) : (
             orderUser?.data?.totalOrderUser.map((product) => (
-              <PurchaseChildren key={product.id} product={product}></PurchaseChildren>
+              <PurchaseChildren
+                key={product._id}
+                product={product}
+                onClick={() => handleCancel(product._id)}
+              ></PurchaseChildren>
             ))
           ))}
       </TabPanelComponent>

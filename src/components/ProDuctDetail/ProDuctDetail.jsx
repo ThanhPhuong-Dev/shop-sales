@@ -11,7 +11,7 @@ import { useQuery } from 'react-query';
 import formatNumber from '~/utils/formatNumber';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { useDispatch, useSelector } from 'react-redux';
-import { addOrderProduct } from '~/redux/Silde/orderProductSlice';
+import { addOrderProduct, orderProductBuy } from '~/redux/Silde/orderProductSlice';
 
 function ProDuctDetail({ idProduct }) {
   const [star, setStar] = useState(2);
@@ -50,7 +50,7 @@ function ProDuctDetail({ idProduct }) {
   const { data: productDetail, isLoading } = useQuery(['productDetail', idProduct], fetchProductDetail, {
     enabled: !!idProduct
   });
-
+  console.log('productDetail', productDetail);
   const handleAddCart = () => {
     if (!user?.id) {
       navigate('/login', { state: location.pathname });
@@ -95,6 +95,21 @@ function ProDuctDetail({ idProduct }) {
     setAmount(amount + 1);
   };
 
+  const handleBuyNow = () => {
+    dispatch(
+      orderProductBuy([
+        {
+          name: productDetail?.data.name,
+          amount: amount,
+          image: productDetail?.data.image,
+          price: productDetail?.data.price,
+          product: productDetail?.data._id,
+          type: productDetail?.data.type
+        }
+      ])
+    );
+    navigate('/payment');
+  };
   return (
     <>
       {isLoading && <LoadingComponent time={2000}></LoadingComponent>}
@@ -343,6 +358,7 @@ function ProDuctDetail({ idProduct }) {
                 Thêm Vào Giỏ Hàng
               </Button>
               <Button
+                onClick={handleBuyNow}
                 variant="contained"
                 disableElevation
                 sx={{

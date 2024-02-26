@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '../../services/userService';
-
+import * as Toasts from '~/utils/reactToasts';
 const fadeLoading = keyframes`
   from {
     transform: rotate(0deg);
@@ -60,8 +60,10 @@ function SignUp() {
   useEffect(() => {
     if (isSuccess) {
       navigate('/login');
+      Toasts.successToast({ title: 'Đăng ký thành công' });
     } else if (isError) {
       setDataError(error.response.data.message);
+      Toasts.errorToast({ title: `${error.response.data.message.message}` });
     }
   }, [isSuccess, isError]);
 

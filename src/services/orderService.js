@@ -19,3 +19,8 @@ export const getOrderUser = async (id) => {
   const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/order/order-user/${id}`);
   return res.data;
 };
+
+export const orderCancel = async (id) => {
+  const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/order/order-cancel/${id}`);
+  return res.data;
+};

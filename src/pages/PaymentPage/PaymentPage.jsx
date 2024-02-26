@@ -9,12 +9,11 @@ import * as Toast from '~/utils/reactToasts';
 import * as OrderServices from '~/services/orderService';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useMutationHook } from '~/hooks/useMutationHook';
-import { orderProductBuy } from '~/redux/Silde/orderProductSlice';
 import { useNavigate } from 'react-router-dom';
 import logo from '~/assets/img/logo.png';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { addOrderUser } from '~/redux/Silde/userSilde';
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -43,7 +42,7 @@ function PaymentPage() {
     phone: '',
     city: ''
   });
-
+  console.log('order', order?.orderItemSelected);
   useEffect(() => {
     let interval;
     if (running) {
@@ -71,9 +70,10 @@ function PaymentPage() {
       city: user?.city || ''
     });
   }, [user]);
-  useEffect(() => {
-    dispatch(addOrderUser({ orderItemSelected: order?.orderItemSelected }));
-  }, []);
+
+  // useEffect(() => {
+  //   dispatch(addOrderUser({ orderItemSelected: order?.orderItemSelected }));
+  // }, []);
 
   const accessUser = localStorage.getItem('access_token');
   const priceMemo = useMemo(() => {
@@ -142,12 +142,12 @@ function PaymentPage() {
           onSuccess: (dataSuccess) => {
             if (dataSuccess?.status == 'OK') {
               Toast.successToast({ title: 'Đặt Hàng Thành Công' });
-              const orderOther = order?.orderItemSelected?.map((order) => {
-                return order.product;
-              });
+              // const orderOther = order?.orderItemSelected?.map((order) => {
+              //   return order.product;
+              // });
               setModalSuccess(true);
               setRunning(true);
-              dispatch(orderProductBuy({ orderOther: orderOther, delivery: delivery }));
+              
             }
           }
         }

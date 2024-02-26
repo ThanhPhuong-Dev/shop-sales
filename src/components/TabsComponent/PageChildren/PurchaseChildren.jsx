@@ -3,8 +3,13 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import HelpIcon from '@mui/icons-material/Help';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import formatNumber from '~/utils/formatNumber';
-function PurchaseChildren({ product }) {
-  console.log('prodcut', product);
+import * as OrderServices from '~/services/orderService';
+import { useMutationHook } from '~/hooks/useMutationHook';
+import { useNavigate } from 'react-router-dom';
+function PurchaseChildren({ product, onClick }) {
+  console.log('priocsc', product);
+
+  const navigate = useNavigate();
   return (
     <Box sx={{ mt: 4 }}>
       <Box
@@ -119,21 +124,37 @@ function PurchaseChildren({ product }) {
               {formatNumber(product?.price * product?.amount)}đ
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            sx={{
-              padding: '10px 20px',
-              width: '150px',
-              fontSize: '1.4rem',
-              backgroundColor: '#ee4d2d',
-              color: 'white',
-              ':hover': {
-                backgroundColor: '#d73211'
-              }
-            }}
-          >
-            Mua lại
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+              onClick={onClick}
+              variant="outlined"
+              sx={{
+                padding: '10px 20px',
+                width: '170px',
+                fontSize: '1.4rem',
+                border: '1px solid #ee4d2d',
+                color: '#ee4d2d'
+              }}
+            >
+              Hủy Đơn hàng
+            </Button>
+            <Button
+              onClick={() => navigate(`/product-details/${product.product}`)}
+              variant="contained"
+              sx={{
+                padding: '10px 20px',
+                width: '170px',
+                fontSize: '1.4rem',
+                backgroundColor: '#ee4d2d',
+                color: 'white',
+                ':hover': {
+                  backgroundColor: '#d73211'
+                }
+              }}
+            >
+              Mua lại
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
