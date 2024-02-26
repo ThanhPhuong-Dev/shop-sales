@@ -9,7 +9,7 @@ function NavBarComponent({ label, datas }) {
   const handleClickType = (e) => {
     const typeName = e.target.innerText;
     console.log('e', e.target.innerText);
-    navigate(`product/${typeName}`, { replace: true });
+    navigate(`/product/${typeName}`, { state: typeName }, { replace: true });
   };
   const handleClick = () => {
     console.log('clickme');

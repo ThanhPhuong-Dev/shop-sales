@@ -80,10 +80,9 @@ export const orderProductSlice = createSlice({
       state.orderItemSelected = orderSelected;
     },
     orderProductBuy: (state, action) => {
-      const { orderOther, delivery } = action.payload;
-      const orderItemOther = state?.orderItems?.filter((order) => !orderOther.includes(order.product));
-      state.orderItems = orderItemOther;
-      state.delivery = delivery;
+      // const { otherOder } = action.payload;
+      // console.log('action.payload', action.payload);
+      state.orderItemSelected = action.payload;
     }
   }
 });

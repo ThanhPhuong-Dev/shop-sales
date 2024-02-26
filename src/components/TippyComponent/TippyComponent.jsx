@@ -36,3 +36,6 @@ function TippyComponent({ children, resultSearch, handleHide, showResult }) {
 }
 
 export default TippyComponent;
+
+
+

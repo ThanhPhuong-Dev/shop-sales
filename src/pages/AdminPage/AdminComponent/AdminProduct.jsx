@@ -219,7 +219,7 @@ function AdminProduct() {
     if (selectedRows) {
       fetchDataProductDetail();
     }
-  }, [selectedRows]);
+  }, [selectedRows, openDrawer]);
 
   const handleClickTable = (selectionModel) => {
     setSelectedName(selectionModel.row.name);

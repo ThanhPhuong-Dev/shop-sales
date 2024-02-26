@@ -21,6 +21,7 @@ function ProfileUser() {
   const [avatar, setAvatar] = useState(user?.avatar);
   const [address, setAddress] = useState(user?.address);
   const [gender, setGender] = useState(user?.gender);
+  const [city, setCity] = useState('');
   const [otherAvatar, setOtherAvatar] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const userId = user?.id;
@@ -31,6 +32,7 @@ function ProfileUser() {
     setAvatar(user?.avatar);
     setAddress(user?.address);
     setGender(user?.gender);
+    setCity(user?.city);
   }, [user]);
 
   const handleEmailChange = (e) => {
@@ -49,6 +51,9 @@ function ProfileUser() {
 
   const handleGenderChange = (e) => {
     setGender(e.target.value);
+  };
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
   };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -136,6 +141,14 @@ function ProfileUser() {
                 value={address}
                 type="text"
                 handleChange={handleAddressChange}
+                width="400px"
+              ></InputComponent>
+              <InputComponent
+                label="Thành Phố"
+                id="city"
+                value={city}
+                type="text"
+                handleChange={handleCityChange}
                 width="400px"
               ></InputComponent>
 
