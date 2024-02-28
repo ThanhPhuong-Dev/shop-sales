@@ -11,7 +11,7 @@ import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 
 function TypeProductPage() {
   const location = useLocation();
-  console.log('locadsa', location);
+  
   const [arrProduct, setArrProduct] = useState([]);
   const [loading, setloading] = useState(false);
   const [pagination, setPagination] = useState({

@@ -28,13 +28,14 @@ function OrderProductComponent({ orderItem, listChecked, setListChecked }) {
 
     // console.log('e', e.target.value);
   };
+ 
 
   const handleChangeCrement = (type, idProduct) => {
     if (type === 'decrement') {
       if (orderItem?.amount > 1) {
         dispatch(decreaseAmount({ idProduct }));
       }
-    } else {
+    } else if (orderItem?.countInStock > orderItem?.amount) {
       dispatch(increaseAmount({ idProduct }));
     }
   };
@@ -67,8 +68,10 @@ function OrderProductComponent({ orderItem, listChecked, setListChecked }) {
               //   whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
-              '-webkit-line-clamp': 2,
-              '-webkit-box-orient': 'vertical',
+              // '-webkit-line-clamp': 2,
+              // '-webkit-box-orient': 'vertical',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
               wordBreak: 'break-word',
               lineHeight: '1.5' // Khoảng cách giữa các dòng
             }}

@@ -11,7 +11,7 @@ function TabPanelComponent({ value, index, children }) {
     >
       {value == index && (
         <Box>
-          <Typography>{children}</Typography>
+          <Box>{children}</Box>
         </Box>
       )}
     </Box>

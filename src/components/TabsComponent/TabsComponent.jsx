@@ -38,7 +38,7 @@ function TabsComponent() {
       }
     );
   };
-  
+
   return (
     <Box>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: 'white' }}>

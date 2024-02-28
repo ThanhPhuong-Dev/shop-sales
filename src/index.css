@@ -9,6 +9,7 @@ body {
   box-sizing: border-box;
   padding-right: 0 !important;
   overflow: auto;
+
   ::-webkit-scrollbar {
     border-radius: 0;
     width: 8px;
