@@ -7,8 +7,6 @@ import * as OrderServices from '~/services/orderService';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import { useNavigate } from 'react-router-dom';
 function PurchaseChildren({ product, onClick }) {
-  console.log('priocsc', product);
-
   const navigate = useNavigate();
   return (
     <Box sx={{ mt: 4 }}>

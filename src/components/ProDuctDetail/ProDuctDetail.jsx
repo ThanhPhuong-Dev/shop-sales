@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardMedia, Grid, Rating, Typography } from '@mui/material';
+import { Box, Button, Card, CardMedia, Grid, Modal, Rating, Typography } from '@mui/material';
 import img1 from '~/assets/img/anh1.jpg';
 import StarIcon from '@mui/icons-material/Star';
 import { useEffect, useState } from 'react';
@@ -12,11 +12,33 @@ import formatNumber from '~/utils/formatNumber';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { useDispatch, useSelector } from 'react-redux';
 import { addOrderProduct, orderProductBuy } from '~/redux/Silde/orderProductSlice';
-
+import * as Toasts from '~/utils/reactToasts';
+import InputComponent from '../InputComponent/InputComponent';
+import { useMutationHook } from '~/hooks/useMutationHook';
+import * as UserServices from '~/services/userService';
+import { updateUser } from '~/redux/Silde/userSilde';
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4
+};
 function ProDuctDetail({ idProduct }) {
   const [star, setStar] = useState(2);
   const [amount, setAmount] = useState(1);
+  const [openModal, setOpenModal] = useState(false);
   const user = useSelector((state) => state.user);
+  const [userFormUpdate, setUserFormUpdate] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: ''
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +55,14 @@ function ProDuctDetail({ idProduct }) {
       color: '#7f8c8d'
     }
   };
-
+  useEffect(() => {
+    setUserFormUpdate({
+      name: user?.name || '',
+      phone: user?.phone || '',
+      address: user?.address || '',
+      city: user?.city || ''
+    });
+  }, [user]);
   const stylePageDetails = {
     mt: 2,
     background: 'white',
@@ -50,24 +79,43 @@ function ProDuctDetail({ idProduct }) {
   const { data: productDetail, isLoading } = useQuery(['productDetail', idProduct], fetchProductDetail, {
     enabled: !!idProduct
   });
-  console.log('productDetail', productDetail);
+  const handleChangeUpdate = (e) => {
+    setUserFormUpdate({
+      ...userFormUpdate,
+      [e.target.name]: e.target.value
+    });
+  };
+  const handleExit = () => {
+    setUserFormUpdate({
+      name: user?.name || '',
+      phone: user?.phone || '',
+      address: user?.address || '',
+      city: user?.city || ''
+    });
+    setOpenModal(false);
+  };
+  const mutationUpdate = useMutationHook(async (data) => {
+    const res = await UserServices.updateUser(user?.id, data);
+    return res;
+  });
+  const handleSubmitUpdate = (e) => {
+    e.preventDefault();
+    mutationUpdate.mutate(
+      { ...userFormUpdate },
+      {
+        onSuccess: (user) => {
+          Toasts.successToast({ title: 'Cập nhật thành công' });
+          dispatch(updateUser({ ...user?.data }));
+          setOpenModal(false);
+        }
+      }
+    );
+  };
+
   const handleAddCart = () => {
     if (!user?.id) {
       navigate('/login', { state: location.pathname });
     } else {
-      // orderItems: [
-      //   {
-      //     name: { type: String, required: true },
-      //     amount: { type: Number, required: true },
-      //     image: { type: String, required: true },
-      //     price: { type: Number, required: true },
-      //     product: {
-      //       type: mongoose.Schema.Types.ObjectId,
-      //       ref: 'Product',
-      //       required: true
-      //     }
-      //   }
-      // ],
       dispatch(
         addOrderProduct({
           orderItem: {
@@ -76,14 +124,13 @@ function ProDuctDetail({ idProduct }) {
             image: productDetail?.data?.image,
             price: productDetail?.data?.price,
             product: productDetail?.data?._id,
-            type: productDetail?.data?.type
+            type: productDetail?.data?.type,
+            countInStock: productDetail?.data?.countInStock
           }
         })
       );
     }
   };
-
-  // console.log('productDetail', productDetail);
 
   const handleDecrement = () => {
     if (amount > 1) {
@@ -92,23 +139,30 @@ function ProDuctDetail({ idProduct }) {
   };
 
   const handleIncrement = () => {
-    setAmount(amount + 1);
+    if (productDetail?.data?.countInStock > amount) {
+      setAmount(amount + 1);
+    }
   };
 
   const handleBuyNow = () => {
-    dispatch(
-      orderProductBuy([
-        {
-          name: productDetail?.data.name,
-          amount: amount,
-          image: productDetail?.data.image,
-          price: productDetail?.data.price,
-          product: productDetail?.data._id,
-          type: productDetail?.data.type
-        }
-      ])
-    );
-    navigate('/payment');
+    if (user?.name && user?.city && user?.address && user?.phone) {
+      dispatch(
+        orderProductBuy([
+          {
+            name: productDetail?.data.name,
+            amount: amount,
+            image: productDetail?.data.image,
+            price: productDetail?.data.price,
+            product: productDetail?.data._id,
+            type: productDetail?.data.type
+          }
+        ])
+      );
+      navigate('/payment');
+    } else {
+      Toasts.errorToast({ title: 'Cập nhập thông tin người dùng' });
+      setOpenModal(true);
+    }
   };
   return (
     <>
@@ -413,6 +467,89 @@ function ProDuctDetail({ idProduct }) {
           <Typography>{productDetail?.data?.description}</Typography>
         </Box>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModal}>
+          <Typography sx={{ mb: 2, fontSize: '1.6rem', fontWeight: 700, textAlign: 'center' }}>
+            Thông Tin Khách Hàng
+          </Typography>
+          <form onSubmit={handleSubmitUpdate}>
+            <InputComponent
+              label="Name"
+              id="name"
+              type="text"
+              name="name"
+              value={userFormUpdate.name}
+              handleChange={handleChangeUpdate}
+              width="250px"
+            ></InputComponent>
+            <InputComponent
+              label="Phone"
+              id="phone"
+              type="text"
+              name="phone"
+              value={userFormUpdate.phone}
+              handleChange={handleChangeUpdate}
+              width="250px"
+            ></InputComponent>
+            <InputComponent
+              label="City"
+              id="city"
+              type="text"
+              name="city"
+              value={userFormUpdate.city}
+              handleChange={handleChangeUpdate}
+              width="250px"
+            ></InputComponent>
+            <InputComponent
+              label="Address"
+              id="address"
+              type="text"
+              name="address"
+              value={userFormUpdate.address}
+              handleChange={handleChangeUpdate}
+              width="250px"
+            ></InputComponent>
+            <Box
+              sx={{
+                gap: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                '& .MuiButtonBase-root': {
+                  padding: '10px',
+                  transition: '0.5s',
+                  fontWeight: 600,
+
+                  '&:hover': {
+                    background: '#2c3e50',
+                    color: 'white'
+                  }
+                }
+              }}
+            >
+              <Button variant="outlined" sx={{ border: '1px solid #ee4d2d', color: '#ee4d2d' }} onClick={handleExit}>
+                Thoát
+              </Button>
+              <Button
+                disabled={
+                  !userFormUpdate.city || !userFormUpdate.name || !userFormUpdate.address || !userFormUpdate.phone
+                }
+                type="submit"
+                variant="contained"
+                sx={{ backgroundColor: '#ee4d2d' }}
+              >
+                Cập Nhật
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
     </>
   );
 }

@@ -75,10 +75,10 @@ function ProfileUser() {
   useEffect(() => {
     if (isSuccess) {
       navigate('/');
-      dispatch(updateUser({ name, email, phone, avatar: otherAvatar, address, gender }));
+      dispatch(updateUser({ name, email, phone, avatar, address, gender, city }));
       Toast.successToast({ title: 'Cập Nhật Thành Công' });
     } else if (isError) {
-      Toast.successToast({ title: 'Cập Nhật Không Thành Công ' });
+      Toast.errorToast({ title: 'Cập Nhật Không Thành Công ' });
       setErrorMessage(error.response.data.message);
     }
   }, [isSuccess, isError]);
@@ -87,7 +87,7 @@ function ProfileUser() {
     e.preventDefault();
     const formdata = new FormData();
     formdata.append('avatar', avatar);
-    mutation.mutate({ name, email, phone, avatar, address, gender, formdata });
+    mutation.mutate({ name, email, phone, avatar, address, gender, city, formdata });
   };
   return (
     <Grid container spacing={2} py={2}>

@@ -152,7 +152,6 @@ function OrderPage() {
     } else if (!user?.name || !user?.address || !user?.phone || !user?.city) {
       setOpenModal(true);
     } else {
-      
       navigate('/payment');
     }
   };
@@ -217,6 +216,7 @@ function OrderPage() {
             </Grid>
           </Grid>
           {/* headerAll end*/}
+
           {order?.orderItems?.map((item) => (
             <OrderProductComponent
               key={item.product}

@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '~/assets/img/logo.png';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { removeAll } from '~/redux/Silde/orderProductSlice';
 
 const style = {
   position: 'absolute',
@@ -42,7 +43,7 @@ function PaymentPage() {
     phone: '',
     city: ''
   });
-  console.log('order', order?.orderItemSelected);
+
   useEffect(() => {
     let interval;
     if (running) {
@@ -126,6 +127,7 @@ function PaymentPage() {
     const res = OrderServices.createOrder(accessUser, data);
     return res;
   });
+
   const ClickBuyProduct = () => {
     if (user?.name || user?.address || user?.phone || user?.city) {
       mutationPayment.mutate(
@@ -136,18 +138,19 @@ function PaymentPage() {
           shippingPrice: checkDelivery,
           totalPrice: totalPriceMemo,
           user: user?.id,
-          shippingAddress: shippingAddress
+          shippingAddress: shippingAddress,
+          email: user?.email
         },
         {
           onSuccess: (dataSuccess) => {
             if (dataSuccess?.status == 'OK') {
               Toast.successToast({ title: 'Đặt Hàng Thành Công' });
-              // const orderOther = order?.orderItemSelected?.map((order) => {
-              //   return order.product;
-              // });
+              const idProduct = order?.orderItemSelected?.map((order) => {
+                return order.product;
+              });
+              dispatch(removeAll({ listChecked: idProduct }));
               setModalSuccess(true);
               setRunning(true);
-              
             }
           }
         }

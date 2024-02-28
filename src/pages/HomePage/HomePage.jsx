@@ -62,7 +62,7 @@ function HomePages() {
               borderBottom: '2px solid #ccc',
               overflowX: 'auto',
 
-              '-webkit-overflow-scrolling': 'touch', // Cho phép cuộn mượt mà trên các trình duyệt di động
+              WebkitOverflowScrolling: 'touch', // Cho phép cuộn mượt mà trên các trình duyệt di động
               msOverflowStyle: 'none',
               '::-webkit-scrollbar': {
                 borderRadius: 0,
