@@ -11,7 +11,8 @@ const initialState = {
   city: '',
   access_token: '',
   isAdmin: false,
-  orderProduct: []
+  orderProduct: [],
+  userCoin: ''
 };
 
 export const userSlide = createSlice({
@@ -19,7 +20,8 @@ export const userSlide = createSlice({
   initialState,
   reducers: {
     updateUser: (state, action) => {
-      const { name, email, access_token, avatar, phone, address, _id, gender, isAdmin, city } = action.payload;
+      const { name, email, access_token, avatar, phone, address, _id, gender, isAdmin, city, userCoin } =
+        action.payload;
 
       state.id = _id;
       state.name = name || email;
@@ -29,6 +31,7 @@ export const userSlide = createSlice({
       state.gender = gender;
       state.avatar = avatar;
       state.city = city;
+      state.userCoin = userCoin;
       state.access_token = access_token;
       state.isAdmin = isAdmin;
     },
@@ -44,12 +47,11 @@ export const userSlide = createSlice({
     },
     addOrderUser: (state, action) => {
       const { orderItemSelected } = action.payload;
-      console.log('orderItemSelected', orderItemSelected);
+
       const otherOrderUser = [];
       orderItemSelected?.forEach((item) => {
         otherOrderUser.push(item);
       });
-     
     }
   }
 });

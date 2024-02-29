@@ -178,7 +178,7 @@ function AdminUser() {
   };
   // ----------------------------cập nhật sửa đổi thông tin người giùm bằng các getDetailsUser để hiện thông tin từng người-----
   const mutationDeleteUser = useMutationHook((data) => {
-    console.log('dataaa', data);
+   
     const res = UserServices.deleteUser(data?.userRemoveID, data?.userAccess);
     return res;
   });

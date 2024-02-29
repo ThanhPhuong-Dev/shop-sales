@@ -2,6 +2,7 @@ import Login from '~/pages/Account/Login';
 import SignUp from '~/pages/Account/SignUp';
 import AdminPage from '~/pages/AdminPage/AdminPage';
 import HomePages from '~/pages/HomePage/HomePage';
+import LoadCoinPage from '~/pages/LoadCoinPage/LoadCoinPage';
 import OrderPage from '~/pages/OrderPage/OrderPage';
 import PaymentPage from '~/pages/PaymentPage/PaymentPage';
 import PaymentSuccessPage from '~/pages/PaymentSuccessPage/PaymentSuccessPage';
@@ -21,6 +22,7 @@ export const publicRouter = [
   { path: '/product-details/:id', element: ProductDetailPage, isShowHeader: true },
   { path: '/profile', element: ProfileUser, isShowHeader: true },
   { path: '/purchase', element: PurchasePage, isShowHeader: true },
+  { path: '/load-coin', element: LoadCoinPage, isShowHeader: true },
   { path: '/register', element: SignUp, isShowHeader: false },
   { path: '/login', element: Login, isShowHeader: false },
   { path: '/system/admin', element: AdminPage, isShowHeader: false, isPrivate: true }

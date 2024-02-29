@@ -8,12 +8,10 @@ function NavBarComponent({ label, datas }) {
   const navigate = useNavigate();
   const handleClickType = (e) => {
     const typeName = e.target.innerText;
-    console.log('e', e.target.innerText);
+   
     navigate(`/product/${typeName}`, { state: typeName }, { replace: true });
   };
-  const handleClick = () => {
-    console.log('clickme');
-  };
+  const handleClick = () => {};
   return (
     <Box
       sx={{

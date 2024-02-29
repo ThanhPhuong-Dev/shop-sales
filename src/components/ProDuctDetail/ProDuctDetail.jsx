@@ -1,6 +1,4 @@
 import { Box, Button, Card, CardMedia, Grid, Modal, Rating, Typography } from '@mui/material';
-import img1 from '~/assets/img/anh1.jpg';
-import StarIcon from '@mui/icons-material/Star';
 import { useEffect, useState } from 'react';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
@@ -17,6 +15,7 @@ import InputComponent from '../InputComponent/InputComponent';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '~/services/userService';
 import { updateUser } from '~/redux/Silde/userSilde';
+
 const styleModal = {
   position: 'absolute',
   top: '50%',
