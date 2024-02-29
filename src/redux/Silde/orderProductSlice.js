@@ -14,7 +14,8 @@ const initialState = {
   isPaid: false,
   paidAl: '',
   isdelivered: false,
-  deliveredAt: ''
+  deliveredAt: '',
+  isSucessOrder: false
 };
 
 export const orderProductSlice = createSlice({
@@ -30,6 +31,7 @@ export const orderProductSlice = createSlice({
         state?.orderItems.push(orderItem);
       }
     },
+
     increaseAmount: (state, action) => {
       const { idProduct } = action.payload;
 
@@ -63,7 +65,6 @@ export const orderProductSlice = createSlice({
       const { listChecked } = action.payload;
       const itemOrder = state?.orderItems?.filter((item) => !listChecked.includes(item.product));
       const itemOrderSelected = state?.orderItemSelected?.filter((item) => !listChecked.includes(item.product));
-
       state.orderItems = itemOrder;
       if (itemOrderSelected) {
         state.orderItemSelected = itemOrderSelected;
@@ -81,7 +82,7 @@ export const orderProductSlice = createSlice({
     },
     orderProductBuy: (state, action) => {
       // const { otherOder } = action.payload;
-      // console.log('action.payload', action.payload);
+
       state.orderItemSelected = action.payload;
     }
   }
@@ -95,7 +96,8 @@ export const {
   removeOrderProduct,
   removeAll,
   selectedOrder,
-  orderProductBuy
+  orderProductBuy,
+  resetOrder
 } = orderProductSlice.actions;
 
 export default orderProductSlice.reducer;

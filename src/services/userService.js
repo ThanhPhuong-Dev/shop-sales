@@ -72,3 +72,15 @@ export const deleteUser = async (id, access_token) => {
   });
   return res.data;
 };
+export const loadCoinUser = async (id, access_token, data) => {
+  const res = await axios.put(
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/load-coin/${id}`,
+    { ...data },
+    {
+      headers: {
+        access_token: `Beare ${access_token}`
+      }
+    }
+  );
+  return res.data;
+};

@@ -26,7 +26,7 @@ function OrderProductComponent({ orderItem, listChecked, setListChecked }) {
       setListChecked([...listChecked, e.target.value]);
     }
 
-    // console.log('e', e.target.value);
+    
   };
  
 

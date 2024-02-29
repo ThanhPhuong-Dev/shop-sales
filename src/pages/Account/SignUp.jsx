@@ -55,7 +55,7 @@ function SignUp() {
     return UserServices.registerUser(data);
   });
   const { data, isSuccess, isError, error } = mutation;
-  console.log('mutation', mutation);
+ 
 
   useEffect(() => {
     if (isSuccess) {

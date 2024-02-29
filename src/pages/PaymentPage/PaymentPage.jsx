@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import logo from '~/assets/img/logo.png';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { removeAll } from '~/redux/Silde/orderProductSlice';
+import { orderProductBuy, removeAll } from '~/redux/Silde/orderProductSlice';
+import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 
 const style = {
   position: 'absolute',
@@ -123,11 +124,22 @@ function PaymentPage() {
   const handleChangeCheckbox = (e) => {
     setDelivery(e.target.value);
   };
+
+  const handleChangePay = (e) => {
+    if (e.target.name === 'laterMoney') {
+      setPayment(e.target.value);
+    } else if (e.target.name === 'payCoin') {
+      setPayment(e.target.value);
+    }
+  };
   const mutationPayment = useMutationHook((data) => {
     const res = OrderServices.createOrder(accessUser, data);
     return res;
   });
-
+  const { isLoading } = mutationPayment;
+  console.log('sfsdfsf', user?.userCoin < totalPriceMemo);
+  console.log('user?.userCoin', user?.userCoin);
+  console.log('totalPriceMemo', totalPriceMemo);
   const ClickBuyProduct = () => {
     if (user?.name || user?.address || user?.phone || user?.city) {
       mutationPayment.mutate(
@@ -149,6 +161,7 @@ function PaymentPage() {
                 return order.product;
               });
               dispatch(removeAll({ listChecked: idProduct }));
+              dispatch(orderProductBuy(order?.orderItemSelected));
               setModalSuccess(true);
               setRunning(true);
             }
@@ -161,6 +174,7 @@ function PaymentPage() {
   return (
     <Box>
       <Typography sx={{ mb: 2 }}>Thanh Toán</Typography>
+      {isLoading && <LoadingComponent time={2000}></LoadingComponent>}
       <Grid container>
         <Grid item xs={9}>
           {/* Thông Tin */}
@@ -315,10 +329,22 @@ function PaymentPage() {
                   label={<Typography sx={{ fontSize: '1.4rem' }}>Thanh Toán Tiền Mặt Khi Nhận Hàng</Typography>}
                   control={
                     <Checkbox
-                      defaultChecked
-                      // checked={checked[0] && checked[1]}
-                      // indeterminate={checked[0] !== checked[1]}
-                      // onChange={handleChange1}
+                      checked={payment === 'later_money'}
+                      name="laterMoney"
+                      value="later_money"
+                      onChange={handleChangePay}
+                    />
+                  }
+                />
+                <FormControlLabel
+                  disabled={user?.userCoin === undefined || user?.userCoin < totalPriceMemo}
+                  label={<Typography sx={{ fontSize: '1.4rem' }}>Thanh Toán PayCoin TPhương </Typography>}
+                  control={
+                    <Checkbox
+                      checked={payment === 'pay_coin'}
+                      name="payCoin"
+                      value="pay_coin"
+                      onChange={handleChangePay}
                     />
                   }
                 />

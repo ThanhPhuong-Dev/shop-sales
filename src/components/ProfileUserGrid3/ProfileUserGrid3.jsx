@@ -3,6 +3,7 @@ import cutTheFirstLetter from '~/utils/cutTheFirstLetter';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { useNavigate } from 'react-router-dom';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 function ProfileUserGrid3({ user }) {
   const navigate = useNavigate();
   return (
@@ -74,7 +75,7 @@ function ProfileUserGrid3({ user }) {
             alignItems: 'center',
             '& .MuiSvgIcon-root ': {
               fontSize: '2.5rem',
-              color: '#d35400',
+              color: '#3498db',
               mr: 2
             },
             '& .MuiTypography-root': {
@@ -87,6 +88,29 @@ function ProfileUserGrid3({ user }) {
         >
           <ContentPasteIcon></ContentPasteIcon>
           <Typography>Đơn Mua</Typography>
+        </Box>
+        <Box
+          onClick={() => navigate('/load-coin')}
+          sx={{
+            mt: 2,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            '& .MuiSvgIcon-root ': {
+              fontSize: '2.5rem',
+              color: '#c0392b',
+              mr: 2
+            },
+            '& .MuiTypography-root': {
+              fontSize: '1.4rem'
+            },
+            ':hover': {
+              color: '#cca77f'
+            }
+          }}
+        >
+          <LocalAtmIcon></LocalAtmIcon>
+          <Typography>Nạp Tiền</Typography>
         </Box>
       </Box>
     </Grid>

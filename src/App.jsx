@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { publicRouter } from './routes/route';
 import DefaultLayout from './layout/DefaultLayout/DefaultLayout';
 import { Fragment, useEffect, useState } from 'react';
@@ -41,11 +41,9 @@ function App() {
       const currentTime = new Date();
       const { decoded } = handleDecoded();
       if (decoded?.exp < currentTime.getTime() / 1000 && !isRefreshing) {
-        console.log('da vaop');
         isRefreshing = true;
         try {
           const data = await UserServices.refreshToken();
-          console.log('dataaaa', data);
           config.headers['access_token'] = `Bearer ${data?.access_token}`;
           localStorage.setItem('access_token', data?.access_token);
           isRefreshing = false;
@@ -62,10 +60,21 @@ function App() {
       return Promise.reject(error);
     }
   );
+
+  const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+  };
   return (
     <div>
       <ToastContainer></ToastContainer>
       <Router>
+        <ScrollToTop></ScrollToTop>
         <Routes>
           {publicRouter.map((route) => {
             const Page = route.element;

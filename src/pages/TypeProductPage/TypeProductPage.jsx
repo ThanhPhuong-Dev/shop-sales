@@ -42,7 +42,7 @@ function TypeProductPage() {
     retryDelay: 1000
   });
   const { data: typeProductData, isLoading } = queryProductType;
-  console.log('queryProductType', queryProductType);
+  
   const handleChangePage = (e, pageCurrnet) => {
     setloading(true);
     setPagination({

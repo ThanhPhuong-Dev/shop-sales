@@ -34,7 +34,7 @@ function FormAccountLogin() {
   const [loading, setLoading] = useState(false);
   const [dataError, setDataError] = useState(null);
 
-  console.log('render');
+  
   const handleEmailChange = (event) => {
     setEmail(event?.target?.value);
   };
