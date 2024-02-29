@@ -11,11 +11,11 @@ import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 
 function TypeProductPage() {
   const location = useLocation();
-  
+
   const [arrProduct, setArrProduct] = useState([]);
   const [loading, setloading] = useState(false);
   const [pagination, setPagination] = useState({
-    limit: 3,
+    limit: 10,
     page: 0
   });
   const fetchTypeProduct = async (context) => {
@@ -42,7 +42,7 @@ function TypeProductPage() {
     retryDelay: 1000
   });
   const { data: typeProductData, isLoading } = queryProductType;
-  
+
   const handleChangePage = (e, pageCurrnet) => {
     setloading(true);
     setPagination({

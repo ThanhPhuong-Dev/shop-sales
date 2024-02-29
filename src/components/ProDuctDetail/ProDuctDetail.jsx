@@ -78,6 +78,7 @@ function ProDuctDetail({ idProduct }) {
   const { data: productDetail, isLoading } = useQuery(['productDetail', idProduct], fetchProductDetail, {
     enabled: !!idProduct
   });
+  
   const handleChangeUpdate = (e) => {
     setUserFormUpdate({
       ...userFormUpdate,

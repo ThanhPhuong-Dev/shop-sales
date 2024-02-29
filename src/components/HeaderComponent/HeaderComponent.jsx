@@ -110,6 +110,7 @@ function HeaderComponent() {
         </Box>
 
         {/* search */}
+
         <TippyComponent resultSearch={resultSearch} handleHide={onHide} showResult={showResult}>
           <Box
             sx={{

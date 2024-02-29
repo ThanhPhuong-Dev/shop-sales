@@ -4,6 +4,7 @@ import SearchResult from './SearchResult/SearchResult';
 
 function TippyComponent({ children, resultSearch, handleHide, showResult }) {
   return (
+   
     <Tippy
       interactive={true}
       visible={showResult && resultSearch?.data?.length > 0}
@@ -32,10 +33,8 @@ function TippyComponent({ children, resultSearch, handleHide, showResult }) {
     >
       {children}
     </Tippy>
+    
   );
 }
 
 export default TippyComponent;
-
-
-

@@ -8,7 +8,7 @@ function NavBarComponent({ label, datas }) {
   const navigate = useNavigate();
   const handleClickType = (e) => {
     const typeName = e.target.innerText;
-   
+
     navigate(`/product/${typeName}`, { state: typeName }, { replace: true });
   };
   const handleClick = () => {};
@@ -53,7 +53,7 @@ function NavBarComponent({ label, datas }) {
             }
           }}
         >
-          <Box
+          {/* <Box
             sx={{
               width: '32px',
               height: '32px',
@@ -62,7 +62,7 @@ function NavBarComponent({ label, datas }) {
             }}
           >
             <img src={data.img} style={{ width: '100%', height: '100%' }}></img>
-          </Box>
+          </Box> */}
           <Typography>{data}</Typography>
         </Box>
       ))}

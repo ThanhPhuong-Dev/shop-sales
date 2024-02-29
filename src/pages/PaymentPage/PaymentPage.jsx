@@ -137,9 +137,7 @@ function PaymentPage() {
     return res;
   });
   const { isLoading } = mutationPayment;
-  console.log('sfsdfsf', user?.userCoin < totalPriceMemo);
-  console.log('user?.userCoin', user?.userCoin);
-  console.log('totalPriceMemo', totalPriceMemo);
+
   const ClickBuyProduct = () => {
     if (user?.name || user?.address || user?.phone || user?.city) {
       mutationPayment.mutate(
