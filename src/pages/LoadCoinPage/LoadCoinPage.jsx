@@ -41,7 +41,7 @@ function LoadCoinPage() {
       Toast.errorToast({ title: 'Nạp tiền không thành công' });
     }
   }, [isSuccess, isError]);
-  console.log('mutationCoin', mutationCoin);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     mutationCoin.mutate({ voucher, coin });
@@ -62,9 +62,9 @@ function LoadCoinPage() {
         >
           <Typography>
             Tài khoản của tôi :
-            <Typography variant="span" sx={{ color: 'red', fontWeight: 600 }}>{` ${formatNumber(
-              user?.userCoin
-            )}đ`}</Typography>
+            <Typography variant="span" sx={{ color: 'red', fontWeight: 600 }}>
+              {user?.userCoin ? `${formatNumber(user?.userCoin)}đ` : '0đ'}
+            </Typography>
           </Typography>
           <Typography variant="p" sx={{ mt: 2 }}>
             Nạp tài khoản bằng mã voucher

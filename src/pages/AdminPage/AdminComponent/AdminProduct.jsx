@@ -357,7 +357,7 @@ function AdminProduct() {
     return ProductServices.createProduct(data);
   });
 
-  const { isError, isSuccess, error } = mutation;
+  const { isError, isSuccess, error, isLoading: loadingNew } = mutation;
 
   useEffect(() => {
     if (isSuccess) {
@@ -461,7 +461,7 @@ function AdminProduct() {
   };
   return (
     <Box sx={{ pt: 5 }}>
-      {loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
+      {loadingNew || loadingRMAll || loadingRemove || <LoadingComponent time={4000}></LoadingComponent>}
       <Typography py={2} sx={{ fontSize: '1.5rem', fontWeight: 700 }}>
         Quản Lý Sản Phẩm
       </Typography>

@@ -178,7 +178,6 @@ function AdminUser() {
   };
   // ----------------------------cập nhật sửa đổi thông tin người giùm bằng các getDetailsUser để hiện thông tin từng người-----
   const mutationDeleteUser = useMutationHook((data) => {
-   
     const res = UserServices.deleteUser(data?.userRemoveID, data?.userAccess);
     return res;
   });
@@ -211,8 +210,9 @@ function AdminUser() {
           Quản Lý Người Dùng
         </Typography>
         <Button
+          disabled={true}
           sx={{ width: '150px', height: '150px', border: '5px solid #34495e' }}
-          onClick={() => setOpenAddModal(true)}
+          // onClick={() => setOpenAddModal(true)}
         >
           <AddIcon sx={{ fontSize: '10rem' }}></AddIcon>
         </Button>

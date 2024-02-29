@@ -23,6 +23,8 @@ import { useSelector } from 'react-redux';
 import cutTheFirstLetter from '~/utils/cutTheFirstLetter';
 import capitalizeFirstLetter from '~/utils/capitalizeFirstLetter';
 import { useNavigate } from 'react-router-dom';
+import AdminOrder from '~/pages/AdminPage/AdminComponent/AdminOrder';
+import StoreIcon from '@mui/icons-material/Store';
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -213,12 +215,19 @@ function SideBar() {
             open={open}
             handleClick={() => setMenudata('AdminProduct')}
           ></ListItemComponent>
+          <ListItemComponent
+            primary="Đơn Mua"
+            icon={<StoreIcon></StoreIcon>}
+            open={open}
+            handleClick={() => setMenudata('AdminOrder')}
+          ></ListItemComponent>
         </List>
         <Divider />
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3, height: '100vh' }}>
         {menudata === 'AdminUser' && <AdminUser></AdminUser>}
         {menudata === 'AdminProduct' && <AdminProduct></AdminProduct>}
+        {menudata === 'AdminOrder' && <AdminOrder></AdminOrder>}
       </Box>
     </Box>
   );
