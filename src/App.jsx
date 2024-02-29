@@ -7,7 +7,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import * as UserServices from './services/userService';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser } from './redux/Silde/userSilde';
+import { resetUser, updateUser } from './redux/Silde/userSilde';
 import { toast, ToastContainer } from 'react-toastify';
 function App() {
   const [accessUser, setAccessUser] = useState('');
@@ -30,34 +30,59 @@ function App() {
   };
 
   const handleGetDetailUser = async (id, access_token) => {
+    const storage = localStorage.getItem('refresh_token');
+    const refreshToken = JSON.parse(storage);
     const res = await UserServices.getDetailrUser(id, access_token);
-    dispatch(updateUser({ ...res?.data, access_token }));
+    dispatch(updateUser({ ...res?.data, access_token, refresh_token: refreshToken }));
   };
 
   let isRefreshing = false;
 
+  // UserServices.axiosJWT.interceptors.request.use(
+  //   async function (config) {
+  //     const currentTime = new Date();
+  //     const { decoded } = handleDecoded();
+
+  //     if (decoded?.exp < currentTime.getTime() / 1000 && !isRefreshing) {
+  //       isRefreshing = true;
+  //       try {
+  //         const data = await UserServices.refreshToken();
+  //         config.headers['access_token'] = `Bearer ${data?.access_token}`;
+  //         localStorage.setItem('access_token', data?.access_token);
+  //         isRefreshing = false;
+  //         return config;
+  //       } catch (error) {
+  //         isRefreshing = false;
+  //         return Promise.reject(error);
+  //       }
+  //     }
+
+  //     return config;
+  //   },
+  //   function (error) {
+  //     return Promise.reject(error);
+  //   }
+  // );
   UserServices.axiosJWT.interceptors.request.use(
-    async function (config) {
+    async (config) => {
+      // Do something before request is sent
       const currentTime = new Date();
       const { decoded } = handleDecoded();
-      if (decoded?.exp < currentTime.getTime() / 1000 && !isRefreshing) {
-        isRefreshing = true;
-        try {
-          const data = await UserServices.refreshToken();
-          config.headers['access_token'] = `Bearer ${data?.access_token}`;
-          localStorage.setItem('access_token', data?.access_token);
-          isRefreshing = false;
-          return config;
-        } catch (error) {
-          isRefreshing = false;
-          return Promise.reject(error);
+      let storageRefreshToken = localStorage.getItem('refresh_token');
+      const refreshToken = JSON.parse(storageRefreshToken);
+      const decodedRefreshToken = jwtDecode(refreshToken);
+      if (decoded?.exp < currentTime.getTime() / 1000) {
+        if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+          const data = await UserServices.refreshToken(refreshToken);
+          config.headers['token'] = `Bearer ${data?.access_token}`;
+        } else {
+          dispatch(resetUser());
         }
       }
-
       return config;
     },
-    function (error) {
-      return Promise.reject(error);
+    (err) => {
+      return Promise.reject(err);
     }
   );
 

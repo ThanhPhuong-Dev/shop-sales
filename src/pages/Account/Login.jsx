@@ -85,7 +85,9 @@ function Login() {
 
   const handleGetDetailUser = async (id, access_token) => {
     const res = await UserServices.getDetailrUser(id, access_token);
-    dispatch(updateUser({ ...res?.data, access_token }));
+    const storage = localStorage.getItem('refresh_token');
+    const refreshToken = JSON.parse(storage);
+    dispatch(updateUser({ ...res?.data, access_token, refresh_token: refreshToken }));
   };
   const handleSubmit = (event) => {
     event.preventDefault();
