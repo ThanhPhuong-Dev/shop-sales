@@ -30,6 +30,7 @@ function AvatarComponent({ user }) {
     setLoading(true);
     await UserServices.logOutUser();
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     navigate('/');
     dispatch(resetUser());
   };
@@ -166,14 +167,7 @@ function AvatarComponent({ user }) {
           </MenuItem>
         )}
         <Divider />
-        <MenuItem onClick={handleClose}>
-          <PersonAddIcon></PersonAddIcon>
-          <Typography>Thêm Người Dùng Khác</Typography>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <SettingsIcon></SettingsIcon>
-          <Typography>Cài Đặt</Typography>
-        </MenuItem>
+
         <MenuItem onClick={handleLogOut}>
           <LogoutIcon></LogoutIcon>
           <Typography>Đăng Xuất</Typography>

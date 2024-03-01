@@ -29,14 +29,15 @@ function App() {
     return { storageData, decoded };
   };
 
-  const handleGetDetailUser = async (id, access_token) => {
-    const storage = localStorage.getItem('refresh_token');
-    const refreshToken = JSON.parse(storage);
-    const res = await UserServices.getDetailrUser(id, access_token);
-    dispatch(updateUser({ ...res?.data, access_token, refresh_token: refreshToken }));
-  };
+  // const fetchRefreshToken = async () => {
+  //   const storage = localStorage.getItem('refresh_token');
+  //   const refreshToken = JSON.parse(storage);
+  //   const data = await UserServices.refreshToken(refreshToken);
+  //   return data;
+  // };
+  // fetchRefreshToken();
 
-  let isRefreshing = false;
+  // let isRefreshing = false;
 
   // UserServices.axiosJWT.interceptors.request.use(
   //   async function (config) {
@@ -63,9 +64,9 @@ function App() {
   //     return Promise.reject(error);
   //   }
   // );
+
   UserServices.axiosJWT.interceptors.request.use(
     async (config) => {
-      // Do something before request is sent
       const currentTime = new Date();
       const { decoded } = handleDecoded();
       let storageRefreshToken = localStorage.getItem('refresh_token');
@@ -74,7 +75,7 @@ function App() {
       if (decoded?.exp < currentTime.getTime() / 1000) {
         if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
           const data = await UserServices.refreshToken(refreshToken);
-          config.headers['token'] = `Bearer ${data?.access_token}`;
+          config.headers['access_token'] = `Bearer ${data?.access_token}`;
         } else {
           dispatch(resetUser());
         }
@@ -86,6 +87,12 @@ function App() {
     }
   );
 
+  const handleGetDetailUser = async (id, access_token) => {
+    const storage = localStorage.getItem('refresh_token');
+    const refreshToken = JSON.parse(storage);
+    const res = await UserServices.getDetailrUser(id, access_token);
+    dispatch(updateUser({ ...res?.data, access_token, refresh_token: refreshToken }));
+  };
   const ScrollToTop = () => {
     const { pathname } = useLocation();
 

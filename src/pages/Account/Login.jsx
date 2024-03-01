@@ -15,7 +15,7 @@ import LowecapitalizeFirstLetterrCase from '~/utils/capitalizeFirstLetter';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/Silde/userSilde';
-import * as Toast from '~/utils/reacttoasts';
+import * as Toasts from '~/utils/reacttoasts.js';
 
 const fadeLoading = keyframes`
   from {
@@ -68,7 +68,7 @@ function Login() {
         navgiate('/');
       }
 
-      Toast.successToast({ title: 'Đăng Nhập Thành Công' });
+      Toasts.successToast({ title: 'Đăng Nhập Thành Công' });
       localStorage.setItem('access_token', data?.access_token);
       localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token));
       if (data?.access_token) {
@@ -78,7 +78,7 @@ function Login() {
         }
       }
     } else if (isError) {
-      Toast.errorToast({ title: 'Đăng Nhập Thất Bại' });
+      Toasts.errorToast({ title: 'Đăng Nhập Thất Bại' });
       setDataError(error.response.data.message);
     }
   }, [isSuccess, isError]);
@@ -202,7 +202,6 @@ function Login() {
                   }}
                 >
                   {dataError.message}
-                  {/* {data?.message} */}
                 </span>
               )}
             </Button>

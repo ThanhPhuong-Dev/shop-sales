@@ -1,13 +1,9 @@
 import axios from 'axios';
 
-export const axiosJWT = axios.create({
-  withCredentials: true
-});
+export const axiosJWT = axios.create();
 
 export const loginUser = async (data) => {
-  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/login`, data, {
-    withCredentials: true
-  });
+  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/login`, data);
   return res.data;
 };
 
@@ -45,9 +41,8 @@ export const getUserAll = async (access_token) => {
 // };
 
 export const refreshToken = async (refreshToken) => {
-  console.log('refreshToken', refreshToken);
   const res = await axios.post(
-    `${process.env.REACT_APP_API_URL}/user/refresh-token`,
+    `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/refresh-token`,
     {},
     {
       headers: {
@@ -57,15 +52,16 @@ export const refreshToken = async (refreshToken) => {
   );
   return res.data;
 };
+
 export const logOutUser = async () => {
-  const res = await axiosJWT.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/log-out`, {
+  const res = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/log-out`, {
     withCredentials: true
   });
   return res.data;
 };
 
 export const updateUser = async (id, data) => {
-  const res = await axios.put(
+  const res = await axiosJWT.put(
     `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/update/${id}`,
     { ...data },
     {
@@ -78,7 +74,7 @@ export const updateUser = async (id, data) => {
 };
 
 export const deleteUser = async (id, access_token) => {
-  const res = await axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/delete/${id}`, {
+  const res = await axiosJWT.delete(`${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/user/delete/${id}`, {
     headers: {
       access_token: `Beare ${access_token}`
     }
