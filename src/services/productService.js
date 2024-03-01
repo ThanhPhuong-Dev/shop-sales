@@ -9,7 +9,7 @@ export const getAllProduct = async (limit) => {
 };
 
 export const createProduct = async (data) => {
-  const res = await axios.post(
+  const res = await axiosJWT.post(
     `${import.meta.env.VITE_REACT_APP_API_URL_BACKEND}/product/create`,
     {
       ...data
