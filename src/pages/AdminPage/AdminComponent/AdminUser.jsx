@@ -21,7 +21,7 @@ import InputComponent from '~/components/InputComponent/InputComponent';
 import UploadComponent from '~/components/InputComponent/UploadComponent/UploadComponent';
 import RadioProfile from '~/pages/ProfileUser/RadioProfile/RadioProfile';
 import { useMutationHook } from '~/hooks/useMutationHook';
-import * as Toast from '~/utils/reactToasts';
+import * as Toast from '~/utils/notification';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 function AdminUser() {
   const [openRemoveModal, setOpenRemoveModal] = useState(false);

@@ -7,7 +7,7 @@ import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '~/services/userService';
 import { useNavigate } from 'react-router-dom';
 import RadioProfile from './RadioProfile/RadioProfile';
-import * as Toast from '~/utils/reactToasts';
+import * as Toast from '~/utils/notification';
 import { updateUser } from '~/redux/Silde/userSilde';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import ProfileUserGrid3 from '~/components/ProfileUserGrid3/ProfileUserGrid3';

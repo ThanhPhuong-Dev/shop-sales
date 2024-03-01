@@ -9,7 +9,7 @@ import { useQuery } from 'react-query';
 import * as UserServices from '~/services/userService';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import InputForm from '~/components/FormAccount/InputForm/InputForm';
-import * as Toast from '~/utils/reactToasts';
+import * as Toast from '~/utils/notification';
 import InputComponent from '~/components/InputComponent/InputComponent';
 import { addOrderUser, updateUser } from '~/redux/Silde/userSilde';
 import { useNavigate } from 'react-router-dom';

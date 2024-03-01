@@ -21,7 +21,7 @@ import InputComponent from '~/components/InputComponent/InputComponent';
 import UploadComponent from '~/components/InputComponent/UploadComponent/UploadComponent';
 import RadioProfile from '~/pages/ProfileUser/RadioProfile/RadioProfile';
 import { useMutationHook } from '~/hooks/useMutationHook';
-import * as Toast from '~/utils/reactToasts';
+import * as Toast from '~/utils/notification';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import PieCharts from '~/components/PieCharts/PieCharts';
 import formatNumber from '~/utils/formatNumber';

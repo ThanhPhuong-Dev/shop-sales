@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '../../services/userService';
-import * as Toasts from '~/utils/reactToasts';
+import * as Toasts from '~/utils/notification';
 const fadeLoading = keyframes`
   from {
     transform: rotate(0deg);

@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { Typography } from '@mui/material';
 import { useMutationHook } from '~/hooks/useMutationHook';
-import * as Toasts from '~/utils/reactToasts';
+import * as Toasts from '~/utils/notification';
 function TabsComponent() {
   const [value, setValue] = useState(0);
   const user = useSelector((state) => state.user);

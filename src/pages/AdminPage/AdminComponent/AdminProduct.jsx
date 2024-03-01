@@ -22,7 +22,7 @@ import { useQuery } from 'react-query';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DrawerComponent from '~/components/DrawerComponent/DrawerComponent';
-import * as Toasts from '~/utils/reactToasts';
+import * as Toasts from '~/utils/notification';
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 

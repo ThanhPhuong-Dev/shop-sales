@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/Silde/userSilde';
-import * as Toast from '~/utils/reacttoasts';
+import * as Toast from '~/utils/notification';
 
 const fadeLoading = keyframes`
   from {
@@ -34,7 +34,6 @@ function FormAccountLogin() {
   const [loading, setLoading] = useState(false);
   const [dataError, setDataError] = useState(null);
 
-  
   const handleEmailChange = (event) => {
     setEmail(event?.target?.value);
   };

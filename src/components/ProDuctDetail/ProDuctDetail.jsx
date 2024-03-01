@@ -10,7 +10,7 @@ import formatNumber from '~/utils/formatNumber';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { useDispatch, useSelector } from 'react-redux';
 import { addOrderProduct, orderProductBuy } from '~/redux/Silde/orderProductSlice';
-import * as Toasts from '~/utils/reactToasts';
+import * as Toasts from '~/utils/notification';
 import InputComponent from '../InputComponent/InputComponent';
 import { useMutationHook } from '~/hooks/useMutationHook';
 import * as UserServices from '~/services/userService';

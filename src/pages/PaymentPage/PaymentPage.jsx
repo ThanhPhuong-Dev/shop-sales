@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import formatNumber from '~/utils/formatNumber';
 
-import * as Toast from '~/utils/reactToasts';
+import * as Toast from '~/utils/notification';
 import * as OrderServices from '~/services/orderService';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useMutationHook } from '~/hooks/useMutationHook';

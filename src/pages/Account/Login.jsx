@@ -15,7 +15,7 @@ import LowecapitalizeFirstLetterrCase from '~/utils/capitalizeFirstLetter';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/Silde/userSilde';
-import * as Toasts from '~/utils/reacttoasts.js';
+import * as Toasts from '~/utils/notification';
 
 const fadeLoading = keyframes`
   from {
