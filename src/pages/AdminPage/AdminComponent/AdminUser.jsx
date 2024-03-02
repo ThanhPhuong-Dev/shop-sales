@@ -27,6 +27,7 @@ function AdminUser() {
   const [openRemoveModal, setOpenRemoveModal] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [userId, setUserId] = useState('');
+  const [otherAvatar, setOtherAvatar] = useState('');
   const [stateUser, setStateUser] = useState({
     email: '',
     name: '',
@@ -111,12 +112,14 @@ function AdminUser() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setStateUser({
+        ...stateUser,
+        avatar: file
+      });
+
       const reader = new FileReader();
       reader.onload = (event) => {
-        setStateUser({
-          ...stateUser,
-          avatar: event.target.result
-        });
+        setOtherAvatar(event.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -147,6 +150,7 @@ function AdminUser() {
   }, [userId]);
 
   const handleChangeUserDetails = (e) => {
+    console.log(' e.target.value', e.target.value);
     setStateUser({
       ...stateUser,
       [e.target.name]: e.target.value
@@ -167,14 +171,17 @@ function AdminUser() {
   const handleSubmitUpdateForm = (e) => {
     e.preventDefault();
     setOpenDrawer(false);
+    const formdata = new FormData();
+    formdata.append('avatar', stateUser.avatar);
     mutationUpdateUser.mutate(
-      { ...stateUser },
+      { ...stateUser, formdata },
       {
         onSettled: () => {
           userQuery.refetch();
         }
       }
     );
+    setOtherAvatar('');
   };
   // ----------------------------cập nhật sửa đổi thông tin người giùm bằng các getDetailsUser để hiện thông tin từng người-----
   const mutationDeleteUser = useMutationHook((data) => {
@@ -312,7 +319,7 @@ function AdminUser() {
                   row
                   aria-labelledby="radio-isAdmin"
                   name="isAdmin"
-                  value={Boolean(stateUser.isAdmin)}
+                  value={String(stateUser.isAdmin)}
                   onChange={handleChangeUserDetails}
                   sx={{
                     '& .MuiTypography-root': {
@@ -327,7 +334,9 @@ function AdminUser() {
               <Box sx={{ display: 'flex', mb: 2, alignItems: 'center' }}>
                 <Typography sx={{ fontSize: '1.4rem', fontWeight: 600, mr: 12 }}>Image</Typography>
                 <UploadComponent handleImageChange={handleImageChange}></UploadComponent>
-                {stateUser?.avatar && (
+                {otherAvatar ? (
+                  <img src={otherAvatar} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
+                ) : (
                   <img src={stateUser.avatar} style={{ width: '33px', height: '33px', marginLeft: '10px' }}></img>
                 )}
               </Box>
